@@ -1,0 +1,107 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible" content="IE=edge")
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+    title Inventaris Lab - Capstone 2
+    
+    // Custom fonts & icons untuk template ini
+    link(href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css")
+    link(href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet")
+    
+    // Custom styles untuk template ini
+    link(href="/css/sb-admin-2.min.css" rel="stylesheet")
+  
+  body#page-top
+    // Page Wrapper
+    #wrapper
+      
+      // SIDEBAR UTAMA
+      ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordion
+        a.sidebar-brand.d-flex.align-items-center.justify-content-center(href="/")
+          .sidebar-brand-icon.rotate-n-15
+            i.fas.fa-laptop-code
+          .sidebar-brand-text.mx-3 Inv-Lab
+        
+        hr.sidebar-divider.my-0
+        
+        // Menu Dashboard 
+        li.nav-item.active
+          a.nav-link(href="/")
+            i.fas.fa-fw.fa-tachometer-alt
+            span Dashboard
+        
+        hr.sidebar-divider
+        .sidebar-heading Menu Inventaris
+        
+        // Menu ini nanti kita batasi berdasarkan Role 
+        li.nav-item
+          a.nav-link(href="#")
+            i.fas.fa-fw.fa-box
+            span Aset & BHP
+        li.nav-item
+          a.nav-link(href="#")
+            i.fas.fa-fw.fa-file-invoice
+            span Pengadaan Barang
+        li.nav-item
+          a.nav-link(href="#")
+            i.fas.fa-fw.fa-tools
+            span Log Maintenance
+      // END OF SIDEBAR
+      
+      // Content Wrapper
+      #content-wrapper.d-flex.flex-column
+        #content
+          
+          // TOPBAR 
+          nav.navbar.navbar-expand.navbar-light.bg-white.topbar.mb-4.static-top.shadow
+            ul.navbar-nav.ml-auto  
+              .topbar-divider.d-none.d-sm-block
+              li.nav-item.dropdown.no-arrow
+                a.nav-link.dropdown-toggle#userDropdown(href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false")
+                  span.mr-2.d-none.d-lg-inline.text-gray-600.small Halo, #{user.nama} (#{user.role})
+                  i.fas.fa-user-circle.fa-2x.text-gray-400
+                .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby="userDropdown")
+                  a.dropdown-item(href="#")
+                    i.fas.fa-user.fa-sm.fa-fw.mr-2.text-gray-400
+                    | Profil Saya
+                  .dropdown-divider
+                  a.dropdown-item(href="#" data-toggle="modal" data-target="#logoutModal")
+                    i.fas.fa-sign-out-alt.fa-sm.fa-fw.mr-2.text-danger
+                    span.text-danger Logout
+          // END OF TOPBAR
+          
+          // AREA KONTEN UTAMA
+          .container-fluid
+            block content
+            
+        // Footer
+        footer.sticky-footer.bg-white
+          .container.my-auto
+            .copyright.text-center.my-auto
+              span Copyright &copy; Proyek Capstone 2 2026
+              
+    // Scroll to Top Button
+    a.scroll-to-top.rounded(href="#page-top")
+      i.fas.fa-angle-up
+      
+    // Logout Modal
+    #logoutModal.modal.fade(tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+      .modal-dialog(role="document")
+        .modal-content
+          .modal-header
+            h5#exampleModalLabel.modal-title Yakin ingin keluar?
+            button.close(type="button" data-dismiss="modal" aria-label="Close")
+              span(aria-hidden="true") ×
+          .modal-body Pilih "Logout" di bawah ini jika kamu siap mengakhiri sesi saat ini.
+          .modal-footer
+            button.btn.btn-secondary(type="button" data-dismiss="modal") Batal
+            a.btn.btn-danger(href="/logout") Logout
+
+    
+    // Bootstrap & Core Javascript Javascript (Wajib urut)
+    script(src="/vendor/jquery/jquery.min.js")
+    script(src="/vendor/bootstrap/js/bootstrap.bundle.min.js")
+    script(src="/vendor/jquery-easing/jquery.easing.min.js")
+    script(src="/js/sb-admin-2.min.js")
