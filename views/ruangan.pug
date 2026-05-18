@@ -1,0 +1,53 @@
+extends layouts/main
+
+block content
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Kelola Data Ruangan
+    button.d-none.d-sm-inline-block.btn.btn-sm.btn-primary.shadow-sm(data-toggle="modal" data-target="#tambahModal")
+      i.fas.fa-plus.fa-sm.text-white-50.mr-1
+      | Tambah Ruangan
+
+  .card.shadow.mb-4
+    .card-header.py-3
+      h6.m-0.font-weight-bold.text-primary Daftar Ruangan Laboratorium
+    .card-body
+      .table-responsive
+        table.table.table-bordered#dataTable(width="100%" cellspacing="0")
+          thead
+            tr
+              th(width="5%").text-center No
+              th Nama Ruangan
+              th(width="20%").text-center Aksi
+          tbody
+            each item, index in dataRuangan
+              tr
+                td.text-center #{index + 1}
+                td #{item.nama_ruangan}
+                td.text-center
+                  a.btn.btn-warning.btn-sm.mr-2(href=`/ruangan/edit/${item.id_ruangan}`)
+                    i.fas.fa-edit.mr-1
+                    | Edit
+                  a.btn.btn-danger.btn-sm(href=`/ruangan/hapus/${item.id_ruangan}` onclick="return confirm('Yakin ingin menghapus ruangan ini?')")
+                    i.fas.fa-trash.mr-1
+                    | Hapus
+            
+            if dataRuangan.length === 0
+              tr
+                td(colspan="3").text-center Belum ada data ruangan.
+
+
+  #tambahModal.modal.fade(tabindex="-1" role="dialog" aria-labelledby="tambahModalLabel" aria-hidden="true")
+    .modal-dialog(role="document")
+      .modal-content
+        .modal-header
+          h5#tambahModalLabel.modal-title Tambah Ruangan Baru
+          button.close(type="button" data-dismiss="modal" aria-label="Close")
+            span(aria-hidden="true") ×
+        form(action="/ruangan/tambah" method="POST")
+          .modal-body
+            .form-group
+              label.font-weight-bold Nama Ruangan
+              input.form-control(type="text" name="nama_ruangan" placeholder="Contoh: Lab Komputer 3" required)
+          .modal-footer
+            button.btn.btn-secondary(type="button" data-dismiss="modal") Batal
+            button.btn.btn-primary(type="submit") Simpan Data
