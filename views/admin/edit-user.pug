@@ -1,0 +1,34 @@
+extends ../layouts/main
+
+block content
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Edit Pengguna
+
+  .row
+    .col-lg-6
+      .card.shadow.mb-4
+        .card-header.py-3
+          h6.m-0.font-weight-bold.text-primary Form Perubahan Data Akun
+        .card-body
+          form(action=`/users/edit/${dataUser.id_user}` method="POST")
+            .form-group
+              label Nama Lengkap
+              input.form-control(type="text" name="nama" value=dataUser.nama required)
+            .form-group
+              label Username
+              input.form-control(type="text" name="username" value=dataUser.username required)
+            .form-group
+              label Password 
+              input.form-control(type="password" name="password" placeholder="Kosongkan jika tidak ingin mengubah password")
+              small.form-text.text-muted Biarkan kosong jika pengguna tidak ingin mengganti password lamanya.
+            .form-group
+              label Role / Jabatan
+              select.form-control(name="role" required)
+                option(value="admin" selected=dataUser.role === 'admin') Admin
+                option(value="kepala_lab" selected=dataUser.role === 'kepala_lab') Kepala Lab
+                option(value="kaprodi" selected=dataUser.role === 'kaprodi') Kaprodi
+                option(value="staf_admin" selected=dataUser.role === 'staf_admin') Staf Admin
+                option(value="staf_lab" selected=dataUser.role === 'staf_lab') Staf Laboratorium
+            
+            a.btn.btn-secondary.mr-2(href="/users") Kembali
+            button.btn.btn-primary(type="submit") Simpan Perubahan

@@ -22,9 +22,11 @@ app.use(session({
 //  PANGGIL & GUNAKAN ROUTER 
 const authRouter = require('./routes/auth');
 const ruanganRouter = require('./routes/ruangan');
+const usersRouter = require('./routes/users');
 
 app.use('/', authRouter);
 app.use('/ruangan', ruanganRouter);
+app.use('/users', usersRouter);
 
 
 //  SERVER START 

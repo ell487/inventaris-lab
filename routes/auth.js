@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
 
 // 2. TAMPILKAN HALAMAN LOGIN
 router.get('/login', (req, res) => {
-    return res.render('login');
+    return res.render('auth/login');
 });
 
 // 3. PROSES LOGIN

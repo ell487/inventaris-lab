@@ -1,0 +1,71 @@
+extends ../layouts/main
+
+block content
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Kelola Pengguna Lab
+
+  .row
+    // Form Tambah Pengguna (Kiri)
+    .col-xl-4.col-lg-5
+      .card.shadow.mb-4
+        .card-header.py-3.bg-primary
+          h6.m-0.font-weight-bold.text-white Tambah Pengguna Baru
+        .card-body
+          form(action="/users/tambah" method="POST")
+            .form-group
+              label Nama Lengkap
+              input.form-control(type="text" name="nama" placeholder="Masukkan nama lengkap" required)
+            .form-group
+              label Username
+              input.form-control(type="text" name="username" placeholder="Masukkan username" required)
+            .form-group
+              label Password
+              input.form-control(type="password" name="password" placeholder="Masukkan password" required)
+            .form-group
+              label Role / Jabatan
+              select.form-control(name="role" required)
+                option(value="" disabled selected) -- Pilih Role --
+                option(value="admin") Admin
+                option(value="kepala_lab") Kepala Lab
+                option(value="kaprodi") Kaprodi
+                option(value="staf_admin") Staf Admin
+                option(value="staf_lab") Staf Laboratorium
+            button.btn.btn-primary.btn-block(type="submit")
+              i.fas.fa-plus.mr-2
+              | Simpan Pengguna
+
+
+    .col-xl-8.col-lg-7
+      .card.shadow.mb-4
+        .card-header.py-3
+          h6.m-0.font-weight-bold.text-primary Daftar Akun Sistem
+        .card-body
+          .table-responsive
+            table.table.table-bordered(width="100%" cellspacing="0")
+              thead
+                tr
+                  th(style="width: 5%") No
+                  th Nama
+                  th Username
+                  th Role
+                  th(style="width: 25%") Aksi
+              tbody
+                if dataUsers && dataUsers.length > 0
+                  each usr, index in dataUsers
+                    tr
+                      <td>#{index + 1}</td>
+                      <td>#{usr.nama}</td>
+                      <td>#{usr.username}</td>
+                      <td>
+                        span.badge.badge-secondary.p-2 #{usr.role.toUpperCase()}
+                      </td>
+                      <td>
+                        a.btn.btn-warning.btn-sm.mr-2(href=`/users/edit/${usr.id_user}`)
+                          i.fas.fa-edit.mr-1
+                          | Edit
+                        a.btn.btn-danger.btn-sm(href=`/users/hapus/${usr.id_user}` onclick="return confirm('Yakin ingin menghapus pengguna ini?')")
+                          i.fas.fa-trash.mr-1
+                          | Hapus
+                else
+                  tr
+                    td.text-center(colspan="5") Belum ada data pengguna.

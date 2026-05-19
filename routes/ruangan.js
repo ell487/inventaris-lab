@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
             console.error(err);
             return res.status(500).send("Terjadi kesalahan pada database.");
         }
-        return res.render('ruangan', { user: req.session.user, dataRuangan: results });
+        return res.render('admin/ruangan', { user: req.session.user, dataRuangan: results });
     });
 });
 
@@ -45,7 +45,7 @@ router.get('/edit/:id', (req, res) => {
             return res.status(500).send("Gagal mengambil data.");
         }
         if (results.length > 0) {
-            return res.render('edit-ruangan', { user: req.session.user, ruangan: results[0] });
+            return res.render('admin/edit-ruangan', { user: req.session.user, ruangan: results[0] });
         } else {
             return res.redirect('/ruangan');
         }
