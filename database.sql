@@ -72,10 +72,10 @@ CREATE TABLE `detail_draf` (
   `tipe_barang` ENUM('inventaris', 'bhp') NOT NULL,
   `nama_barang` VARCHAR(100) NOT NULL,
   `harga_satuan` INT NOT NULL,
-  `jumlah` INT NOT NULL, -- Jumlah yang diajukan oleh Kalab
+  `jumlah` INT NOT NULL, 
   `link_pembelian` TEXT NOT NULL,
-  `id_inventaris_lama` INT DEFAULT NULL, -- Relasi barang pengganti (jika ada aset rusak)
-  `status_approval` ENUM('pending', 'disetujui', 'ditolak') NOT NULL DEFAULT 'pending', -- Diubah secara spesifik per item oleh Kaprodi
+  `id_inventaris_lama` INT DEFAULT NULL, 
+  `status_approval` ENUM('pending', 'disetujui', 'ditolak') NOT NULL DEFAULT 'pending', 
   PRIMARY KEY (`id_detail`),
   CONSTRAINT `fk_detail_draf` FOREIGN KEY (`id_draf`) REFERENCES `draf_pengadaan` (`id_draf`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_detail_inventaris_lama` FOREIGN KEY (`id_inventaris_lama`) REFERENCES `inventaris` (`id_inventaris`) ON DELETE SET NULL ON UPDATE CASCADE
@@ -87,9 +87,9 @@ CREATE TABLE `detail_draf` (
 CREATE TABLE `riwayat_penerimaan` (
   `id_penerimaan` INT NOT NULL AUTO_INCREMENT,
   `id_detail` INT NOT NULL,
-  `jumlah_diterima` INT NOT NULL, -- Mendukung input parsial (misal datang 2 dulu dari total 5)
+  `jumlah_diterima` INT NOT NULL, 
   `tanggal_penerimaan` DATE NOT NULL,
-  `id_staf_admin` INT NOT NULL, -- Siapa staf admin yang menginput barang masuk
+  `id_staf_admin` INT NOT NULL, 
   PRIMARY KEY (`id_penerimaan`),
   CONSTRAINT `fk_penerimaan_detail` FOREIGN KEY (`id_detail`) REFERENCES `detail_draf` (`id_detail`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_penerimaan_staf` FOREIGN KEY (`id_staf_admin`) REFERENCES `users` (`id_user`) ON DELETE RESTRICT ON UPDATE CASCADE
@@ -101,11 +101,11 @@ CREATE TABLE `riwayat_penerimaan` (
 CREATE TABLE `log_maintenance` (
   `id_log` INT NOT NULL AUTO_INCREMENT,
   `id_inventaris` INT NOT NULL,
-  `id_staf_lab` INT NOT NULL, -- Penanggung jawab maintenance
+  `id_staf_lab` INT NOT NULL,
   `tanggal_maintenance` DATE NOT NULL,
   `deskripsi` TEXT NOT NULL,
-  `id_bhp_digunakan` INT DEFAULT NULL, -- Kosongkan jika perbaikan tidak pakai BHP
-  `jumlah_bhp_dipakai` INT DEFAULT NULL, -- Mengurangi stok di tabel BHP via query aplikasi
+  `id_bhp_digunakan` INT DEFAULT NULL,
+  `jumlah_bhp_dipakai` INT DEFAULT NULL, 
   PRIMARY KEY (`id_log`),
   CONSTRAINT `fk_log_inventaris` FOREIGN KEY (`id_inventaris`) REFERENCES `inventaris` (`id_inventaris`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_log_staf` FOREIGN KEY (`id_staf_lab`) REFERENCES `users` (`id_user`) ON DELETE RESTRICT ON UPDATE CASCADE,
