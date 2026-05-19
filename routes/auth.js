@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database'); // Naik 1 folder untuk panggil config
+const db = require('../config/database'); 
 
 // 1. ROUTE DASHBOARD 
 router.get('/', (req, res) => {
