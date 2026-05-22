@@ -1,0 +1,32 @@
+extends ../layouts/main
+
+block content
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Dashboard Staf Administrasi
+
+  .card.shadow.mb-4
+    .card-header.py-3
+      h6.m-0.font-weight-bold.text-primary Draf Pengadaan yang Siap Diterima
+    .card-body
+      .table-responsive
+        table.table.table-bordered(width="100%" cellspacing="0")
+          thead
+            tr
+              th(style="width: 5%") No
+              th Judul Draf Pengadaan
+              th Tahun Ajaran
+              th(style="width: 20%") Aksi
+          tbody
+            if dataDraf && dataDraf.length > 0
+              each draf, index in dataDraf
+                tr
+                  td #{index + 1}
+                  td #{draf.judul_draf}
+                  td #{draf.tahun}
+                  td
+                    a.btn.btn-primary.btn-sm.btn-block(href=`/staf-admin/draf/${draf.id_draf}`)
+                      i.fas.fa-boxes.mr-1
+                      | Cek Item & Terima
+            else
+              tr
+                td.text-center(colspan="4") Belum ada draf pengadaan yang dikunci oleh Kaprodi.

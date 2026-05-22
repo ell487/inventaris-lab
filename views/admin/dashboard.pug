@@ -1,11 +1,9 @@
-extends layouts/main
+extends ../layouts/main
 
 block content
-  // Page Heading
   .d-sm-flex.align-items-center.justify-content-between.mb-4
-    h1.h3.mb-0.text-gray-800 Dashboard Utama
+    h1.h3.mb-0.text-gray-800 Dashboard Utama (Admin)
   
-  // Content Row 
   .row
     .col-xl-4.col-md-6.mb-4
       .card.border-left-primary.shadow.h-100.py-2
@@ -13,7 +11,7 @@ block content
           .row.no-gutters.align-items-center
             .col.mr-2
               .text-xs.font-weight-bold.text-primary.text-uppercase.mb-1 Total Ruangan Lab
-              .h5.mb-0.font-weight-bold.text-gray-800 #{totalRuangan} Ruangan
+              .h5.mb-0.font-weight-bold.text-gray-800 #{totalRuangan || 0} Ruangan
             .col-auto
               i.fas.fa-door-open.fa-2x.text-gray-300
               

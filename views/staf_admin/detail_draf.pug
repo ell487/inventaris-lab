@@ -1,0 +1,43 @@
+extends ../layouts/main
+
+block content
+  .mb-4
+    a.btn.btn-secondary.btn-sm(href="/staf-admin") 
+      i.fas.fa-arrow-left.mr-1
+      | Kembali
+    h1.h3.mt-2.text-gray-800 Detail Barang & Penerimaan
+
+  .card.shadow.mb-4
+    .card-body
+      .table-responsive
+        table.table.table-bordered
+          thead
+            tr
+              th Nama Barang
+              th Tipe
+              th Target Kebutuhan
+              th Total Diterima Saat Ini
+              th Aksi Registrasi
+          tbody
+            if dataItems && dataItems.length > 0
+              each item in dataItems
+                tr
+                  td #{item.nama_barang}
+                  td 
+                    span.badge.badge-secondary #{item.tipe_barang.toUpperCase()}
+                  td #{item.jumlah} Unit
+                  td #{item.total_diterima} Unit
+                  td
+                    if item.total_diterima < item.jumlah && item.tipe_barang === 'inventaris'
+                      a.btn.btn-info.btn-sm(href=`/staf-admin/terima-inventaris/${item.id_detail}`)
+                        i.fas.fa-tag.mr-1
+                        | Beri Label QR (1 Unit)
+                    else if item.total_diterima < item.jumlah && item.tipe_barang === 'bhp'
+                      a.btn.btn-warning.btn-sm(href=`/staf-admin/terima-bhp/${item.id_detail}`)
+                        i.fas.fa-plus.mr-1
+                        | Tambah Stok BHP
+                    else
+                      span.badge.badge-success Selesai Diterima
+            else
+              tr
+                td.text-center(colspan="5") Tidak ada item yang disetujui dalam draf ini.

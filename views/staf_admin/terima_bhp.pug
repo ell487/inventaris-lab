@@ -1,0 +1,30 @@
+extends ../layouts/main
+
+block content
+  .mb-4
+    h1.h3.text-gray-800 Formulir Penerimaan BHP (Barang Habis Pakai)
+
+  .row
+    .col-lg-6
+      .card.shadow.mb-4
+        .card-header.py-3.bg-warning
+          h6.m-0.font-weight-bold.text-white Catat Penerimaan Stok BHP
+        .card-body
+          form(action=`/staf-admin/terima-bhp/${item.id_detail}` method="POST")
+            input(type="hidden" name="id_draf" value=item.id_draf)
+            
+            .form-group
+              label Nama Item BHP
+              input.form-control(type="text" value=item.nama_barang disabled)
+              
+            .form-group
+              label Jumlah Unit Diterima (Parsial/Total)
+              input.form-control(type="number" name="jumlah_diterima" min="1" max=(item.jumlah - item.total_diterima) required)
+              
+            .form-group
+              label Tanggal Penerimaan Fisik
+              input.form-control(type="date" name="tanggal_penerimaan" required)
+            
+            button.btn.btn-warning.btn-block(type="submit")
+              i.fas.fa-plus.mr-1
+              | Simpan Penerimaan BHP

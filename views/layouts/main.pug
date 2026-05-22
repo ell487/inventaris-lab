@@ -35,7 +35,7 @@ html(lang="en")
         hr.sidebar-divider
         .sidebar-heading Menu Utama
         
-        //- MENU KHUSUS ADMIN
+        //- MENU KHUSUS ADMIN 
         if user.role === 'admin'
           li.nav-item
             a.nav-link(href="/ruangan")
@@ -46,26 +46,37 @@ html(lang="en")
               i.fas.fa-fw.fa-users
               span Kelola Pengguna
 
-        //- MENU KHUSUS KEPALA LAB
+        //- MENU KHUSUS KEPALA LAB 
         if user.role === 'kepala_lab'
           li.nav-item
             a.nav-link(href="/pengadaan")
               i.fas.fa-fw.fa-file-alt
               span Draf Pengadaan
 
-        //- MENU KHUSUS KAPRODI
+        //- MENU KHUSUS KAPRODI 
         if user.role === 'kaprodi'
           li.nav-item
             a.nav-link(href="/approval")
               i.fas.fa-fw.fa-check-double
               span Approval Draf
 
-        //- MENU KHUSUS STAF ADMIN & STAF LAB
-        if user.role === 'staf_admin' || user.role === 'staf_lab'
+        //- MENU KHUSUS STAF ADMINISTRASI 
+        if user.role === 'staf_admin'
+          li.nav-item
+            a.nav-link(href="/staf-admin")
+              i.fas.fa-fw.fa-clipboard-check
+              span Dashboard Penerimaan
+
+        //- MENU KHUSUS STAF LABORATORIUM 
+        if user.role === 'staf_lab'
           li.nav-item
             a.nav-link(href="/inventaris")
-              i.fas.fa-fw.fa-box
+              i.fas.fa-fw.fa-boxes
               span Data Inventaris & BHP
+          li.nav-item
+            a.nav-link(href="/maintenance")
+              i.fas.fa-fw.fa-tools
+              span Log Pemeliharaan
       // END OF SIDEBAR
 
       // Content Wrapper
@@ -118,7 +129,7 @@ html(lang="en")
             a.btn.btn-danger(href="/logout") Logout
 
     
-    // Bootstrap & Core Javascript Javascript (Wajib urut)
+    // Bootstrap & Core Javascript Javascript 
     script(src="/vendor/jquery/jquery.min.js")
     script(src="/vendor/bootstrap/js/bootstrap.bundle.min.js")
     script(src="/vendor/jquery-easing/jquery.easing.min.js")

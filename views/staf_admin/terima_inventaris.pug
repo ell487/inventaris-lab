@@ -1,0 +1,42 @@
+extends ../layouts/main
+
+block content
+  .mb-4
+    h1.h3.text-gray-800 Registrasi Label Aset Fisik
+
+  .row
+    .col-lg-6
+      .card.shadow.mb-4
+        .card-header.py-3.bg-info
+          h6.m-0.font-weight-bold.text-white Formulir Label QR per Unit
+        .card-body
+          form(action=`/staf-admin/terima-inventaris/${item.id_detail}` method="POST" enctype="multipart/form-data")
+            input(type="hidden" name="id_draf" value=item.id_draf)
+            input(type="hidden" name="nama_barang" value=item.nama_barang)
+            
+            .form-group
+              label Nama Item Barang
+              input.form-control(type="text" value=item.nama_barang disabled)
+            
+            .form-group
+              label Kode Label / Serial QR unik
+              input.form-control(type="text" name="kode_label_qr" placeholder="Contoh: LAB-IF-2026-001" required)
+            
+            .form-group
+              label Penempatan Lokasi Ruangan
+              select.form-control(name="id_ruangan" required)
+                if dataRuangan
+                  each rgn in dataRuangan
+                    option(value=rgn.id_ruangan) #{rgn.nama_ruangan}
+            
+            .form-group
+              label Tanggal Penerimaan Fisik
+              input.form-control(type="date" name="tanggal_penerimaan" required)
+            
+            .form-group
+              label Upload Foto Stiker QR Terpasang
+              input.form-control-file(type="file" name="foto_qr" accept="image/*" required)
+            
+            button.btn.btn-info.btn-block(type="submit")
+              i.fas.fa-save.mr-1
+              | Simpan Penerimaan Unit
