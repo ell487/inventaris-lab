@@ -1,0 +1,63 @@
+extends ../layouts/main
+
+block content
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Draf Pengadaan Barang
+    button.btn.btn-primary.btn-sm.shadow-sm(data-toggle="modal" data-target="#tambahDrafModal")
+      i.fas.fa-plus.fa-sm.text-white-50.mr-2
+      | Buat Draf Baru
+
+  .card.shadow.mb-4
+    .card-header.py-3
+      h6.m-0.font-weight-bold.text-primary Riwayat Pengadaan
+    .card-body
+      .table-responsive
+        table.table.table-bordered(width="100%" cellspacing="0")
+          thead
+            tr
+              th No
+              th Judul Draf Pengadaan
+              th Tahun
+              th Status
+              th Aksi
+          tbody
+            if dataDraf && dataDraf.length > 0
+              each draf, index in dataDraf
+                tr
+                  td #{index + 1}
+                  td.font-weight-bold #{draf.judul_draf}
+                  td #{draf.tahun}
+                  td
+                    if draf.status_draf === 'draft'
+                      span.badge.badge-warning Masih Diedit
+                    else if draf.status_draf === 'pending_kaprodi'
+                      span.badge.badge-info Direview Kaprodi
+                    else
+                      span.badge.badge-danger Selesai / Terkunci
+                  td
+                    a.btn.btn-primary.btn-sm(href=`/pengadaan/detail/${draf.id_draf}`)
+                      i.fas.fa-folder-open.mr-1
+                      | Kelola
+            else
+              tr
+                td.text-center(colspan="5") Belum ada draf pengadaan.
+
+  // Modal Tambah
+  #tambahDrafModal.modal.fade(tabindex="-1" role="dialog" aria-hidden="true")
+    .modal-dialog(role="document")
+      .modal-content
+        .modal-header.bg-primary.text-white
+          h5.modal-title Buat Draf Baru
+          button.close.text-white(type="button" data-dismiss="modal" aria-label="Close")
+            span(aria-hidden="true") ×
+        form(action="/pengadaan/tambah" method="POST")
+          .modal-body
+            .form-group
+              label Judul Draf
+              input.form-control(type="text" name="judul_draf" required)
+            .form-group
+              label Tahun Anggaran
+              input.form-control(type="number" name="tahun" required)
+          .modal-footer
+            button.btn.btn-secondary(type="button" data-dismiss="modal") Batal
+            button.btn.btn-primary(type="submit") Buat

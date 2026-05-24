@@ -24,13 +24,13 @@ const authRouter = require('./routes/auth');
 const ruanganRouter = require('./routes/ruangan');
 const usersRouter = require('./routes/users');
 const stafAdminRouter = require('./routes/staf_admin'); 
+const pengadaanRouter = require('./routes/kepala_lab');
 
 // LOGIKA REDIRECT DASHBOARD SESUAI ROLE USER
 app.get('/', (req, res) => {
     if (!req.session.user) {
         return res.redirect('/login');
     }
-
     const role = req.session.user.role;
 
     if (role === 'admin') {
@@ -40,6 +40,8 @@ app.get('/', (req, res) => {
         });
     } else if (role === 'staf_admin') {
         res.redirect('/staf-admin');
+    } else if (role === 'kepala_lab') {
+        res.redirect('/pengadaan');
     } else {
         res.send(`Selamat datang ${req.session.user.nama}. Dashboard untuk peran ${role} sedang dalam tahap perakitan.`);
     }
@@ -50,6 +52,7 @@ app.use('/', authRouter);
 app.use('/ruangan', ruanganRouter);
 app.use('/users', usersRouter);
 app.use('/staf-admin', stafAdminRouter); 
+app.use('/pengadaan', pengadaanRouter);
 
 // SERVER START 
 app.listen(port, () => {

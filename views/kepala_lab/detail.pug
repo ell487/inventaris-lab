@@ -1,0 +1,87 @@
+extends ../layouts/main
+
+block content
+  .mb-4
+    a.btn.btn-secondary.btn-sm.mb-3(href="/pengadaan")
+      i.fas.fa-arrow-left.mr-1
+      | Kembali
+    .card.bg-light.text-dark.shadow-sm
+      .card-body
+        h4.font-weight-bold #{draf.judul_draf}
+        p.mb-0 Tahun: #{draf.tahun} | Status: <b>#{draf.status_draf.toUpperCase()}</b>
+
+  if draf.status_draf === 'draft'
+    .card.shadow.mb-4
+      .card-header.py-3.bg-primary.text-white
+        h6.m-0.font-weight-bold Tambah Item Barang
+      .card-body
+        form(action=`/pengadaan/detail/${draf.id_draf}/add-item` method="POST")
+          .row
+            .col-md-3.form-group
+              label Tipe Barang
+              select.form-control(name="tipe_barang" required)
+                option(value="inventaris") Inventaris (Aset Tetap)
+                option(value="bhp") BHP (Barang Habis Pakai)
+            .col-md-5.form-group
+              label Nama Barang
+              input.form-control(type="text" name="nama_barang" required)
+            .col-md-4.form-group
+              label Barang Pengganti (Opsional)
+              select.form-control(name="id_inventaris_lama")
+                option(value="") -- Tidak Mengganti --
+                if inventarisLama
+                  each inv in inventarisLama
+                    option(value=inv.id_inventaris) #{inv.kode_label_qr || '-'} - #{inv.nama_barang}
+          .row
+            .col-md-3.form-group
+              label Harga Satuan (Rp)
+              input.form-control(type="number" name="harga_satuan" required)
+            .col-md-2.form-group
+              label Jumlah
+              input.form-control(type="number" name="jumlah" required)
+            .col-md-7.form-group
+              label Link Pembelian
+              input.form-control(type="url" name="link_pembelian" required)
+          button.btn.btn-success.btn-block(type="submit") Tambah Item
+
+  .card.shadow.mb-4
+    .card-header.py-3.d-flex.flex-row.align-items-center.justify-content-between
+      h6.m-0.font-weight-bold Daftar Usulan Barang
+      if draf.status_draf === 'draft' && items.length > 0
+        form(action=`/pengadaan/lock/${draf.id_draf}` method="POST" onsubmit="return confirm('Kunci draf dan ajukan ke Kaprodi? Data tidak akan bisa diedit lagi!')")
+          button.btn.btn-danger.btn-sm(type="submit") Kunci & Ajukan
+
+    .card-body
+      .table-responsive
+        table.table.table-bordered(width="100%" cellspacing="0")
+          thead
+            tr
+              th No
+              th Nama Barang
+              th Tipe
+              th Harga Satuan
+              th Jumlah
+              th Total
+              th Barang Diganti
+              th Link
+              if draf.status_draf === 'draft'
+                th Aksi
+          tbody
+            if items && items.length > 0
+              each item, index in items
+                tr
+                  td #{index + 1}
+                  td #{item.nama_barang}
+                  td #{item.tipe_barang.toUpperCase()}
+                  td Rp #{item.harga_satuan.toLocaleString('id-ID')}
+                  td #{item.jumlah}
+                  td Rp #{(item.harga_satuan * item.jumlah).toLocaleString('id-ID')}
+                  td #{item.nama_barang_lama || '-'}
+                  td
+                    a.btn.btn-light.btn-sm(href=item.link_pembelian target="_blank") <i class="fas fa-link"></i>
+                  if draf.status_draf === 'draft'
+                    td
+                      a.btn.btn-danger.btn-sm(href=`/pengadaan/detail/${draf.id_draf}/delete-item/${item.id_detail}` onclick="return confirm('Hapus?')") <i class="fas fa-trash"></i>
+            else
+              tr
+                td.text-center(colspan="9") Belum ada item.
