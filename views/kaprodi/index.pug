@@ -1,0 +1,40 @@
+extends ../layouts/main
+
+block content
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Dashboard Ketua Program Studi
+
+  .card.shadow.mb-4
+    .card-header.py-3
+      h6.m-0.font-weight-bold.text-primary Daftar Usulan Pengadaan Menunggu Review
+    .card-body
+      .table-responsive
+        table.table.table-bordered(width="100%" cellspacing="0")
+          thead
+            tr
+              th No
+              th Pengusul (Kalab)
+              th Judul Draf Pengadaan
+              th Tahun
+              th Status
+              th Aksi
+          tbody
+            if dataDraf && dataDraf.length > 0
+              each draf, index in dataDraf
+                tr
+                  td #{index + 1}
+                  td #{draf.nama_kalab}
+                  td.font-weight-bold #{draf.judul_draf}
+                  td #{draf.tahun}
+                  td
+                    if draf.status_draf === 'pending_kaprodi'
+                      span.badge.badge-warning Menunggu Review Anda
+                    else if draf.status_draf === 'locked'
+                      span.badge.badge-success Selesai (Final)
+                  td
+                    a.btn.btn-primary.btn-sm(href=`/kaprodi/detail/${draf.id_draf}`)
+                      i.fas.fa-search.mr-1
+                      | Review
+            else
+              tr
+                td.text-center(colspan="6") Belum ada draf pengadaan yang diajukan.

@@ -1,0 +1,75 @@
+extends ../layouts/main
+
+block content
+  .mb-4
+    a.btn.btn-secondary.btn-sm.mb-3(href="/kaprodi")
+      i.fas.fa-arrow-left.mr-1
+      | Kembali
+    .card.bg-light.text-dark.shadow-sm
+      .card-body.d-flex.justify-content-between.align-items-center
+        div
+          h4.font-weight-bold #{draf.judul_draf}
+          p.mb-0 Tahun: #{draf.tahun} | Status Draf: <b>#{draf.status_draf.toUpperCase()}</b>
+        
+        if draf.status_draf === 'pending_kaprodi'
+          form(action=`/kaprodi/lock/${draf.id_draf}` method="POST" onsubmit="return confirm('Anda yakin melakukan Finalisasi? Setelah difinalisasi, draf ini akan dikirim ke Staf Admin dan tidak dapat diubah lagi.')")
+            button.btn.btn-success.btn-lg(type="submit")
+              i.fas.fa-check-circle.mr-2
+              | Finalisasi Draf (Kunci)
+
+  .card.shadow.mb-4
+    .card-header.py-3.bg-primary.text-white
+      h6.m-0.font-weight-bold Rincian Barang Usulan
+    .card-body
+      form(action=`/kaprodi/detail/${draf.id_draf}/review` method="POST")
+        .table-responsive
+          table.table.table-bordered(width="100%" cellspacing="0")
+            thead
+              tr
+                th No
+                th Nama Barang
+                th Harga Satuan
+                th Jml
+                th Total
+                th Barang Pengganti
+                th Review Kaprodi
+            tbody
+              if items && items.length > 0
+                each item, index in items
+                  tr
+                    td #{index + 1}
+                    td 
+                      | #{item.nama_barang} 
+                      a.badge.badge-light.ml-1(href=item.link_pembelian target="_blank") Cek Link Toko
+                    td Rp #{item.harga_satuan.toLocaleString('id-ID')}
+                    td #{item.jumlah}
+                    td Rp #{(item.harga_satuan * item.jumlah).toLocaleString('id-ID')}
+                    td 
+                      if item.nama_barang_lama
+                        span.text-danger #{item.nama_barang_lama} (Rusak)
+                      else
+                        | -
+                    td
+                      if draf.status_draf === 'pending_kaprodi'
+                        .form-check.form-check-inline
+                          input.form-check-input(type="radio" name=`status_${item.id_detail}` value="disetujui" id=`setuju_${item.id_detail}` checked=item.status_approval==='disetujui' required)
+                          label.form-check-label.text-success(for=`setuju_${item.id_detail}`) Setuju
+                        .form-check.form-check-inline
+                          input.form-check-input(type="radio" name=`status_${item.id_detail}` value="ditolak" id=`tolak_${item.id_detail}` checked=item.status_approval==='ditolak' required)
+                          label.form-check-label.text-danger(for=`tolak_${item.id_detail}`) Tolak
+                      else
+                        if item.status_approval === 'disetujui'
+                          span.badge.badge-success Disetujui
+                        else if item.status_approval === 'ditolak'
+                          span.badge.badge-danger Ditolak
+                        else
+                          span.badge.badge-secondary #{item.status_approval}
+              else
+                tr
+                  td.text-center(colspan="7") Belum ada rincian barang.
+        
+        if draf.status_draf === 'pending_kaprodi'
+          hr
+          button.btn.btn-primary.float-right(type="submit") 
+            i.fas.fa-save.mr-1
+            | Simpan Hasil Review Sementara
