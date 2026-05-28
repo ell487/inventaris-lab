@@ -1,0 +1,44 @@
+extends ../layouts/main
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-4.d-print-none
+    h1.h3.text-gray-800 Cetak Label QR Code
+    button.btn.btn-primary.btn-lg(onclick="window.print()")
+      i.fas.fa-print.mr-2
+      | Cetak / Print Label
+
+  .card.shadow.mb-4.d-print-none
+    .card-body.bg-light
+      p.mb-0.text-dark 
+        i.fas.fa-info-circle.mr-2
+        | Klik tombol <b>Cetak / Print Label</b> di atas. Sistem akan otomatis membuka dialog print komputer Anda. Bagian menu samping dan atas otomatis disembunyikan saat dicetak.
+
+  .row
+    if dataAssets && dataAssets.length > 0
+      each asset in dataAssets
+        .col-md-4.col-sm-6.mb-4
+          .card.text-center.border-dark.shadow-sm(style="max-width: 250px; margin: auto;")
+            .card-header.bg-dark.text-white.py-1.small.font-weight-bold
+              | PROPERTI LAB - INVENTARIS
+            .card-body.p-2
+
+              img(src=asset.foto_qr alt=asset.kode_label_qr style="width: 140px; height: 140px;")
+              h6.font-weight-bold.mt-2.mb-1.text-dark #{asset.nama_barang}
+              div.badge.badge-secondary.text-wrap(style="font-size: 11px;") #{asset.kode_label_qr}
+    else
+      .col-12.text-center
+        p Tidak ada label yang siap dicetak.
+
+  style.
+    @media print {
+      .d-print-none, #accordionSidebar, .navbar, footer {
+        display: none !important;
+      }
+      #content-wrapper {
+        background: transparent !important;
+      }
+      .card {
+        border: 1px solid #000 !important;
+        page-break-inside: avoid;
+      }
+    }

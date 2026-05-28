@@ -1,19 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database'); 
-const multer = require('multer');
+const QRCode = require('qrcode'); 
 const path = require('path');
 
-// Konfigurasi Penyimpanan Upload Foto QR
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/uploads/qr/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); 
-    }
-});
-const upload = multer({ storage: storage });
 
 // Middleware Proteksi Khusus Role Staf Administrasi
 const isStafAdmin = (req, res, next) => {
@@ -52,7 +42,7 @@ router.get('/draf/:id_draf', isStafAdmin, (req, res) => {
     });
 });
 
-// 3. Render Form Penerimaan Satuan Inventaris (QR)
+// 3. Render Form Penerimaan Satuan Inventaris
 router.get('/terima-inventaris/:id_detail', isStafAdmin, (req, res) => {
     db.query('SELECT * FROM detail_draf WHERE id_detail = ?', [req.params.id_detail], (err, result) => {
         if (err) return res.status(500).send(err.message);
@@ -63,20 +53,45 @@ router.get('/terima-inventaris/:id_detail', isStafAdmin, (req, res) => {
     });
 });
 
-// 4. Proses Simpan Aset Inventaris + Catat Riwayat Parsial
-router.post('/terima-inventaris/:id_detail', isStafAdmin, upload.single('foto_qr'), (req, res) => {
-    const { kode_label_qr, nama_barang, id_ruangan, tanggal_penerimaan, id_draf } = req.body;
-    const fotoQr = req.file ? req.file.filename : null;
+// 4. PROSES BARU: Auto-Generate Label, QR Code, dan Looping Input Multi-Aset
+router.post('/terima-inventaris/:id_detail', isStafAdmin, async (req, res) => {
+    const { nama_barang, id_ruangan, tanggal_penerimaan, id_draf, jumlah_diterima } = req.body;
+    const id_detail = req.params.id_detail;
+    const qty = parseInt(jumlah_diterima) || 1; 
 
-    const queryAsset = 'INSERT INTO inventaris (kode_label_qr, nama_barang, kondisi, id_ruangan, foto_qr) VALUES (?, ?, "baik", ?, ?)';
-    db.query(queryAsset, [kode_label_qr, nama_barang, id_ruangan, fotoQr], (err) => {
-        if (err) return res.status(500).send("Gagal simpan! Kode QR mungkin sudah terpakai oleh aset lain.");
+    // Catat ke tabel riwayat penerimaan (parsial/sekaligus)
+    const queryRiwayat = 'INSERT INTO riwayat_penerimaan (id_detail, jumlah_diterima, tanggal_penerimaan, id_staf_admin) VALUES (?, ?, ?, ?)';
+    db.query(queryRiwayat, [id_detail, qty, tanggal_penerimaan, req.session.user.id_user], async (err, result) => {
+        if (err) return res.status(500).send(err.message);
 
-        const queryRiwayat = 'INSERT INTO riwayat_penerimaan (id_detail, jumlah_diterima, tanggal_penerimaan, id_staf_admin) VALUES (?, 1, ?, ?)';
-        db.query(queryRiwayat, [req.params.id_detail, tanggal_penerimaan, req.session.user.id_user], (err) => {
-            if (err) return res.status(500).send(err.message);
+        try {
+            const tahunSekarang = new Date().getFullYear(); 
+            for (let i = 0; i < qty; i++) {
+                const uniqueTimestamp = Date.now() + i; 
+                const kodeLabelOtomatis = `LAB-${tahunSekarang}-${uniqueTimestamp.toString().slice(-5)}`;
+                const namaFileQR = `${kodeLabelOtomatis}.png`;
+                const pathSimpanFile = path.join(__dirname, '../public/uploads/qr/', namaFileQR);
+                const pathUntukDatabase = `/uploads/qr/${namaFileQR}`;
+
+                await QRCode.toFile(pathSimpanFile, kodeLabelOtomatis);
+
+                // Simpan setiap unit barang baru ke tabel inventaris
+                await new Promise((resolve, reject) => {
+                    const queryAsset = 'INSERT INTO inventaris (kode_label_qr, nama_barang, kondisi, id_ruangan, foto_qr) VALUES (?, ?, "baik", ?, ?)';
+                    db.query(queryAsset, [kodeLabelOtomatis, nama_barang, id_ruangan, pathUntukDatabase], (err) => {
+                        if (err) reject(err);
+                        else resolve();
+                    });
+                });
+            }
+
+            // Selesai looping, lempar kembali ke halaman detail draf pengadaan
             res.redirect('/staf-admin/draf/' + id_draf);
-        });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).send("Gagal mengenerate QR Code otomatis: " + error.message);
+        }
     });
 });
 
@@ -103,6 +118,36 @@ router.post('/terima-bhp/:id_detail', isStafAdmin, (req, res) => {
     db.query(queryRiwayat, [req.params.id_detail, jumlah_diterima, tanggal_penerimaan, req.session.user.id_user], (err) => {
         if (err) return res.status(500).send(err.message);
         res.redirect('/staf-admin/draf/' + id_draf);
+    });
+});
+
+// 7. BARU: Halaman Cetak Kumpulan Label QR yang Berhasil Dibuat
+router.get('/cetak-label/:id_detail', isStafAdmin, (req, res) => {
+    const id_detail = req.params.id_detail;
+
+  
+    db.query('SELECT * FROM detail_draf WHERE id_detail = ?', [id_detail], (err, detailResult) => {
+        if (err || detailResult.length === 0) return res.status(404).send("Data draf tidak ditemukan");
+        const item = detailResult[0];
+
+        db.query('SELECT SUM(jumlah_diterima) AS total FROM riwayat_penerimaan WHERE id_detail = ?', [id_detail], (err, riwayatResult) => {
+            const totalDiterima = riwayatResult[0].total || 0;
+
+            if (totalDiterima === 0) return res.send("Belum ada barang yang diterima untuk dicetak.");
+
+            db.query(
+                'SELECT * FROM inventaris WHERE nama_barang = ? ORDER BY id_inventaris DESC LIMIT ?', 
+                [item.nama_barang, parseInt(totalDiterima)], 
+                (err, assets) => {
+                    if (err) return res.status(500).send(err.message);
+                    res.render('staf_admin/cetak_label', { 
+                        user: req.session.user, 
+                        item: item, 
+                        dataAssets: assets.reverse() 
+                    });
+                }
+            );
+        });
     });
 });
 

@@ -8,9 +8,9 @@ block content
     .col-lg-6
       .card.shadow.mb-4
         .card-header.py-3.bg-info
-          h6.m-0.font-weight-bold.text-white Formulir Label QR per Unit
+          h6.m-0.font-weight-bold.text-white Formulir Penerimaan & Auto-Generate QR
         .card-body
-          form(action=`/staf-admin/terima-inventaris/${item.id_detail}` method="POST" enctype="multipart/form-data")
+          form(action=`/staf-admin/terima-inventaris/${item.id_detail}` method="POST")
             input(type="hidden" name="id_draf" value=item.id_draf)
             input(type="hidden" name="nama_barang" value=item.nama_barang)
             
@@ -18,9 +18,10 @@ block content
               label Nama Item Barang
               input.form-control(type="text" value=item.nama_barang disabled)
             
+            //- BARU: Menginput jumlah unit yang datang untuk memicu looping otomatis di backend
             .form-group
-              label Kode Label / Serial QR unik
-              input.form-control(type="text" name="kode_label_qr" placeholder="Contoh: LAB-IF-2026-001" required)
+              label Jumlah Barang yang Diterima (Unit)
+              input.form-control(type="number" name="jumlah_diterima" min="1" placeholder="Contoh: 5" required)
             
             .form-group
               label Penempatan Lokasi Ruangan
@@ -33,10 +34,6 @@ block content
               label Tanggal Penerimaan Fisik
               input.form-control(type="date" name="tanggal_penerimaan" required)
             
-            .form-group
-              label Upload Foto Stiker QR Terpasang
-              input.form-control-file(type="file" name="foto_qr" accept="image/*" required)
-            
             button.btn.btn-info.btn-block(type="submit")
-              i.fas.fa-save.mr-1
-              | Simpan Penerimaan Unit
+              i.fas.fa-magic.mr-1
+              | Simpan & Generate QR Otomatis
