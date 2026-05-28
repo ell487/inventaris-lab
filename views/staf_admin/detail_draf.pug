@@ -28,16 +28,26 @@ block content
                   td #{item.jumlah} Unit
                   td #{item.total_diterima} Unit
                   td
+                 
                     if item.total_diterima < item.jumlah && item.tipe_barang === 'inventaris'
-                      a.btn.btn-info.btn-sm(href=`/staf-admin/terima-inventaris/${item.id_detail}`)
-                        i.fas.fa-tag.mr-1
-                        | Beri Label QR (1 Unit)
+                      a.btn.btn-info.btn-sm.mr-1(href=`/staf-admin/terima-inventaris/${item.id_detail}`)
+                        i.fas.fa-magic.mr-1
+                        | Input Penerimaan & QR
+                    
+                   
                     else if item.total_diterima < item.jumlah && item.tipe_barang === 'bhp'
                       a.btn.btn-warning.btn-sm(href=`/staf-admin/terima-bhp/${item.id_detail}`)
                         i.fas.fa-plus.mr-1
                         | Tambah Stok BHP
+                    
+                   
                     else
-                      span.badge.badge-success Selesai Diterima
+                      span.badge.badge-success.mr-1 Selesai Diterima
+
+                    if item.total_diterima > 0 && item.tipe_barang === 'inventaris'
+                      a.btn.btn-dark.btn-sm(href=`/staf-admin/cetak-label/${item.id_detail}`)
+                        i.fas.fa-print.mr-1
+                        | Cetak QR
             else
               tr
                 td.text-center(colspan="5") Tidak ada item yang disetujui dalam draf ini.
