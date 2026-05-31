@@ -1,0 +1,65 @@
+extends ../layouts/main
+
+block content
+  .mb-4
+    h1.h3.text-gray-800 Dashboard Pengelolaan Staf Laboratorium
+
+  .row
+    .col-lg-8
+      .card.shadow.mb-4
+        .card-header.py-3.bg-primary
+          h6.m-0.font-weight-bold.text-white Monitoring Kondisi & Pemeliharaan Aset
+        .card-body
+          .table-responsive
+            table.table.table-bordered
+              thead
+                tr
+                  th Kode Label
+                  th Nama Barang
+                  th Lokasi Ruang
+                  th Status Kondisi
+                  th Tindakan
+              tbody
+                if dataInventaris && dataInventaris.length > 0
+                  each asset in dataInventaris
+                    tr
+                      td: span.badge.badge-dark #{asset.kode_label_qr}
+                      td #{asset.nama_barang}
+                      td #{asset.nama_ruangan || 'Belum Ditempatkan'}
+                      td
+                        form(action=`/staf-lab/update-kondisi/${asset.id_inventaris}` method="POST")
+                          select.form-control.form-control-sm(name="kondisi" onchange="this.form.submit()")
+                            option(value="baik" selected=asset.kondisi==='baik') Baik
+                            option(value="rusak_ringan" selected=asset.kondisi==='rusak_ringan') Rusak Ringan
+                            option(value="rusak_berat" selected=asset.kondisi==='rusak_berat') Rusak Berat
+                      td
+                        a.btn.btn-success.btn-sm(href=`/staf-lab/maintenance/${asset.id_inventaris}`)
+                          i.fas.fa-tools.mr-1
+                          | Catat Perbaikan
+                else
+                  tr
+                    td.text-center(colspan="5") Belum ada data inventaris fisik di dalam laboratorium.
+
+    .col-lg-4
+      .card.shadow.mb-4
+        .card-header.py-3.bg-warning
+          h6.m-0.font-weight-bold.text-dark Kontrol Stok BHP
+        .card-body
+          .table-responsive
+            table.table.table-striped
+              thead
+                tr
+                  th Nama Barang BHP
+                  th Sisa Stok
+              tbody
+                if dataBHP && dataBHP.length > 0
+                  each bhp in dataBHP
+                    tr
+                      td #{bhp.nama_bhp}
+                      td
+                        span.font-weight-bold(class=bhp.stok <= 5 ? 'text-danger' : 'text-success') #{bhp.stok} Unit
+                        if bhp.stok <= 5
+                          span.badge.badge-danger.ml-2 Segera Ambil!
+                else
+                  tr
+                    td.text-center(colspan="2") Data stok BHP kosong.

@@ -26,6 +26,7 @@ const usersRouter = require('./routes/users');
 const stafAdminRouter = require('./routes/staf_admin'); 
 const pengadaanRouter = require('./routes/kepala_lab');
 const kaprodiRouter = require('./routes/kaprodi');
+const staflabRouter = require('./routes/staf_lab');
 
 // LOGIKA REDIRECT DASHBOARD SESUAI ROLE USER
 app.get('/', (req, res) => {
@@ -45,6 +46,8 @@ app.get('/', (req, res) => {
         res.redirect('/pengadaan');
     } else if (role === 'kaprodi') {
         res.redirect('/kaprodi');
+    } else if (role === 'staf_lab') {
+        res.redirect('/staf-lab');
     } else {
         res.send(`Selamat datang ${req.session.user.nama}. Dashboard untuk peran ${role} sedang dalam tahap perakitan.`);
     }
@@ -57,7 +60,7 @@ app.use('/users', usersRouter);
 app.use('/staf-admin', stafAdminRouter); 
 app.use('/pengadaan', pengadaanRouter);
 app.use('/kaprodi', kaprodiRouter);
-
+app.use('/staf-lab', staflabRouter);
 // SERVER START 
 app.listen(port, () => {
     console.log(`Server berjalan mantap di http://localhost:${port}`);

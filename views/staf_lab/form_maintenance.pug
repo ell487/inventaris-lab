@@ -1,0 +1,55 @@
+extends ../layouts/main
+
+block content
+  .mb-4
+    a.btn.btn-secondary.btn-sm(href="/staf-lab") 
+      i.fas.fa-arrow-left.mr-1
+      | Kembali
+    h1.h3.mt-2.text-gray-800 Form Aktivitas Maintenance Aset
+
+  .row
+    .col-lg-6
+      .card.shadow.mb-4
+        .card-header.py-3.bg-success
+          h6.m-0.font-weight-bold.text-white Laporan Perbaikan: #{asset.nama_barang} [#{asset.kode_label_qr}]
+        .card-body
+          form(action=`/staf-lab/maintenance/${asset.id_inventaris}` method="POST")
+            
+            .form-group
+              label Deskripsi Kerusakan & Aktivitas Perbaikan
+              textarea.form-control(name="deskripsi_kegiatan" rows="3" placeholder="Contoh: Mengganti thermal paste processor karena suhu PC overheat..." required)
+            
+            .form-group
+              label Tanggal Eksekusi Maintenance
+              input.form-control(type="date" name="tanggal_maintenance" required)
+            
+            .form-group
+              label Apakah Perbaikan Ini Memotong Stok BHP?
+              select.form-control#pilihBHP(name="menggunakan_bhp" onchange="toggleBhpSection(this.value)")
+                option(value="tidak") Tidak, Hanya Perbaikan Fisik
+                option(value="ya") Ya, Menggunakan Komponen BHP
+                
+            #section-bhp(style="display: none; border-left: 4px solid #1cc88a; padding-left: 15px;")
+              .form-group
+                label Pilih Item BHP yang Digunakan
+                select.form-control(name="id_bhp")
+                  if dataBHP
+                    each bhp in dataBHP
+                      option(value=bhp.id_bhp) #{bhp.nama_bhp} (Tersedia: #{bhp.stok} Unit)
+              .form-group
+                label Jumlah yang Digunakan
+                input.form-control(type="number" name="jumlah_bhp_digunakan" min="1" value="1")
+
+            button.btn.btn-success.btn-block.mt-4(type="submit")
+              i.fas.fa-save.mr-1
+              | Simpan Laporan Perbaikan
+
+  script.
+    function toggleBhpSection(val) {
+      const section = document.getElementById('section-bhp');
+      if(val === 'ya') {
+        section.style.display = 'block';
+      } else {
+        section.style.display = 'none';
+      }
+    }
