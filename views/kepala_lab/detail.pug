@@ -2,7 +2,7 @@ extends ../layouts/main
 
 block content
   .mb-4
-    a.btn.btn-secondary.btn-sm.mb-3(href="/pengadaan")
+    a.btn.btn-secondary.btn-sm.mb-3(href="/kalab/pengadaan")
       i.fas.fa-arrow-left.mr-1
       | Kembali
     .card.bg-light.text-dark.shadow-sm
@@ -10,12 +10,25 @@ block content
         h4.font-weight-bold #{draf.judul_draf}
         p.mb-0 Tahun: #{draf.tahun} | Status: <b>#{draf.status_draf.toUpperCase()}</b>
 
+  //- ALERT NOTIFIKASI
+  if status === 'updated'
+    .alert.alert-success.alert-dismissible.fade.show(role="alert")
+      i.fas.fa-check-circle.mr-2
+      | Berhasil! Perubahan item barang telah disimpan.
+      button.close(type="button" data-dismiss="alert") &times;
+
+  if status === 'deleted'
+    .alert.alert-warning.alert-dismissible.fade.show(role="alert")
+      i.fas.fa-trash.mr-2
+      | Berhasil! Item barang telah dihapus dari usulan.
+      button.close(type="button" data-dismiss="alert") &times;
+
   if draf.status_draf === 'draft'
     .card.shadow.mb-4
       .card-header.py-3.bg-primary.text-white
         h6.m-0.font-weight-bold Tambah Item Barang
       .card-body
-        form(action=`/pengadaan/detail/${draf.id_draf}/add-item` method="POST")
+        form(action=`/kalab/pengadaan/detail/${draf.id_draf}/add-item` method="POST")
           .row
             .col-md-3.form-group
               label Tipe Barang
@@ -48,7 +61,7 @@ block content
     .card-header.py-3.d-flex.flex-row.align-items-center.justify-content-between
       h6.m-0.font-weight-bold Daftar Usulan Barang
       if draf.status_draf === 'draft' && items.length > 0
-        form(action=`/pengadaan/lock/${draf.id_draf}` method="POST" onsubmit="return confirm('Kunci draf dan ajukan ke Kaprodi? Data tidak akan bisa diedit lagi!')")
+        form(action=`/kalab/pengadaan/lock/${draf.id_draf}` method="POST" onsubmit="return confirm('Kunci draf dan ajukan ke Kaprodi?')")
           button.btn.btn-danger.btn-sm(type="submit") Kunci & Ajukan
 
     .card-body
@@ -81,7 +94,50 @@ block content
                     a.btn.btn-light.btn-sm(href=item.link_pembelian target="_blank") <i class="fas fa-link"></i>
                   if draf.status_draf === 'draft'
                     td
-                      a.btn.btn-danger.btn-sm(href=`/pengadaan/detail/${draf.id_draf}/delete-item/${item.id_detail}` onclick="return confirm('Hapus?')") <i class="fas fa-trash"></i>
+                      button.btn.btn-warning.btn-sm.mr-1(data-toggle="modal" data-target=`#modalEditItem${item.id_detail}`)
+                        i.fas.fa-edit
+                      a.btn.btn-danger.btn-sm(href=`/kalab/pengadaan/detail/${draf.id_draf}/delete-item/${item.id_detail}` onclick="return confirm('Hapus item ini?')")
+                        i.fas.fa-trash
+
+                //- MODAL POPUP EDIT ITEM
+                .modal.fade(id=`modalEditItem${item.id_detail}` tabindex="-1" role="dialog" aria-hidden="true")
+                  .modal-dialog.modal-lg(role="document")
+                    .modal-content
+                      .modal-header.bg-warning.text-dark
+                        h5.modal-title <i class="fas fa-edit mr-2"></i> Ubah Item Usulan
+                        button.close(type="button" data-dismiss="modal") &times;
+                      form(action=`/kalab/pengadaan/detail/${draf.id_draf}/edit-item/${item.id_detail}` method="POST")
+                        .modal-body
+                          .row
+                            .col-md-4.form-group
+                              label Tipe Barang
+                              select.form-control(name="tipe_barang" required)
+                                option(value="inventaris" selected=item.tipe_barang === 'inventaris') Inventaris
+                                option(value="bhp" selected=item.tipe_barang === 'bhp') BHP
+                            .col-md-8.form-group
+                              label Nama Barang
+                              input.form-control(type="text" name="nama_barang" value=item.nama_barang required)
+                          .row
+                            .col-md-12.form-group
+                              label Barang Pengganti (Opsional)
+                              select.form-control(name="id_inventaris_lama")
+                                option(value="") -- Tidak Mengganti --
+                                if inventarisLama
+                                  each inv in inventarisLama
+                                    option(value=inv.id_inventaris selected=item.id_inventaris_lama === inv.id_inventaris) #{inv.kode_label_qr || '-'} - #{inv.nama_barang}
+                          .row
+                            .col-md-4.form-group
+                              label Harga Satuan (Rp)
+                              input.form-control(type="number" name="harga_satuan" value=item.harga_satuan required)
+                            .col-md-3.form-group
+                              label Jumlah
+                              input.form-control(type="number" name="jumlah" value=item.jumlah required)
+                            .col-md-5.form-group
+                              label Link Pembelian
+                              input.form-control(type="url" name="link_pembelian" value=item.link_pembelian required)
+                        .modal-footer
+                          button.btn.btn-secondary(type="button" data-dismiss="modal") Batal
+                          button.btn.btn-warning(type="submit") Simpan Perubahan
             else
               tr
                 td.text-center(colspan="9") Belum ada item.

@@ -49,9 +49,13 @@ html(lang="en")
         //- MENU KHUSUS KEPALA LAB 
         if user.role === 'kepala_lab'
           li.nav-item
-            a.nav-link(href="/pengadaan")
+            a.nav-link(href="/kalab/pengadaan")
               i.fas.fa-fw.fa-file-alt
               span Draf Pengadaan
+          li.nav-item
+            a.nav-link(href="/kalab/monitoring")
+              i.fas.fa-fw.fa-chart-pie
+              span Monitoring Asset & BHP
 
         //- MENU KHUSUS KAPRODI 
         if user.role === 'kaprodi'

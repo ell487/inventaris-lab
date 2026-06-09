@@ -35,7 +35,7 @@ block content
                     else
                       span.badge.badge-danger Selesai / Terkunci
                   td
-                    a.btn.btn-primary.btn-sm(href=`/pengadaan/detail/${draf.id_draf}`)
+                    a.btn.btn-primary.btn-sm(href=`/kalab/pengadaan/detail/${draf.id_draf}`)
                       i.fas.fa-folder-open.mr-1
                       | Kelola
             else
@@ -50,7 +50,7 @@ block content
           h5.modal-title Buat Draf Baru
           button.close.text-white(type="button" data-dismiss="modal" aria-label="Close")
             span(aria-hidden="true") ×
-        form(action="/pengadaan/tambah" method="POST")
+        form(action="/kalab/pengadaan/tambah" method="POST")
           .modal-body
             .form-group
               label Judul Draf

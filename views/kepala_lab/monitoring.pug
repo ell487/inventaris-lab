@@ -1,0 +1,69 @@
+extends ../layouts/main
+
+block content
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 <i class="fas fa-chart-pie mr-2"></i> Pemantauan Inventaris & BHP
+
+  //- PANEL FILTER DATA
+  .card.shadow.mb-4
+    .card-body
+      form(action="/kalab/monitoring" method="GET").form-inline
+        label.mr-2.font-weight-bold Ruangan Lab:
+        select.form-control.mr-4(name="ruangan")
+          option(value="all" selected=(currentFilterRuangan === 'all')) -- Semua Ruangan --
+          if dataRuangan
+            each ruang in dataRuangan
+              option(value=ruang.id_ruangan selected=(currentFilterRuangan == ruang.id_ruangan)) #{ruang.nama_ruangan}
+
+        label.mr-2.font-weight-bold Tahun Pengadaan:
+        select.form-control.mr-4(name="tahun")
+          option(value="" selected=(currentFilterTahun === '')) -- Semua Tahun --
+          if dataTahun
+            each th in dataTahun
+              option(value=th.tahun_pengadaan selected=(currentFilterTahun == th.tahun_pengadaan)) #{th.tahun_pengadaan}
+
+        button.btn.btn-primary.px-3(type="submit")
+          i.fas.fa-filter.mr-1
+          | Filter
+        a.btn.btn-secondary.ml-2(href="/kalab/monitoring") Reset
+
+  //- DATA MONITORING
+  .card.shadow.mb-4
+    .card-header.py-3.bg-dark.text-white
+      h6.m-0.font-weight-bold <i class="fas fa-list mr-1"></i> Daftar Barang Gabungan
+    .card-body
+      .table-responsive
+        table.table.table-bordered.table-hover(width="100%" cellspacing="0")
+          thead.thead-light
+            tr
+              th No
+              th QR Code
+              th Nama Barang
+              th Tipe
+              th Lokasi Ruangan
+              th Tahun
+              th Kondisi
+          tbody
+            if dataBarang && dataBarang.length > 0
+              each item, index in dataBarang
+                tr
+                  td #{index + 1}
+                  td: code #{item.kode_label_qr}
+                  td.font-weight-bold #{item.nama_barang}
+                  td
+                    if item.tipe_barang === 'bhp'
+                      span.badge.badge-warning BHP
+                    else
+                      span.badge.badge-success Inventaris
+                  td #{item.nama_ruangan || 'Belum di-set'}
+                  td #{item.tahun_pengadaan || '-'}
+                  td
+                    if item.kondisi === 'baik'
+                      span.badge.badge-pill.badge-success Baik
+                    else if item.kondisi === 'maintenance'
+                      span.badge.badge-pill.badge-info Perawatan
+                    else if item.kondisi === 'rusak'
+                      span.badge.badge-pill.badge-danger Rusak
+            else
+              tr
+                td.text-center.text-muted.py-4(colspan="7") Data kosong / tidak ditemukan barang yang cocok.

@@ -43,7 +43,7 @@ app.get('/', (req, res) => {
     } else if (role === 'staf_admin') {
         res.redirect('/staf-admin');
     } else if (role === 'kepala_lab') {
-        res.redirect('/pengadaan');
+        res.redirect('/kalab/pengadaan'); 
     } else if (role === 'kaprodi') {
         res.redirect('/kaprodi');
     } else if (role === 'staf_lab') {
@@ -58,9 +58,10 @@ app.use('/', authRouter);
 app.use('/ruangan', ruanganRouter);
 app.use('/users', usersRouter);
 app.use('/staf-admin', stafAdminRouter); 
-app.use('/pengadaan', pengadaanRouter);
+app.use('/kalab', pengadaanRouter); 
 app.use('/kaprodi', kaprodiRouter);
 app.use('/staf-lab', staflabRouter);
+
 // SERVER START 
 app.listen(port, () => {
     console.log(`Server berjalan mantap di http://localhost:${port}`);
