@@ -4,6 +4,42 @@ block content
   .d-sm-flex.align-items-center.justify-content-between.mb-4
     h1.h3.mb-0.text-gray-800 Kelola Pengguna Lab
 
+  //- BLOK NOTIFIKASI ALERT
+  if status === 'updated'
+    .alert.alert-success.alert-dismissible.fade.show(role="alert")
+      i.fas.fa-check-circle.mr-2
+      | Berhasil! Data pengguna telah diperbarui.
+      button.close(type="button" data-dismiss="alert" aria-label="Close")
+        span(aria-hidden="true") &times;
+        
+  if status === 'inserted'
+    .alert.alert-success.alert-dismissible.fade.show(role="alert")
+      i.fas.fa-plus-circle.mr-2
+      | Berhasil! Pengguna baru telah ditambahkan.
+      button.close(type="button" data-dismiss="alert" aria-label="Close")
+        span(aria-hidden="true") &times;
+        
+  if status === 'deleted'
+    .alert.alert-warning.alert-dismissible.fade.show(role="alert")
+      i.fas.fa-trash-alt.mr-2
+      | Berhasil! Pengguna telah dihapus.
+      button.close(type="button" data-dismiss="alert" aria-label="Close")
+        span(aria-hidden="true") &times;
+        
+  if error === 'password_mismatch'
+    .alert.alert-danger.alert-dismissible.fade.show(role="alert")
+      i.fas.fa-exclamation-triangle.mr-2
+      | Gagal! Password dan Konfirmasi Password tidak cocok.
+      button.close(type="button" data-dismiss="alert" aria-label="Close")
+        span(aria-hidden="true") &times;
+
+  if error === 'duplicate_username'
+    .alert.alert-danger.alert-dismissible.fade.show(role="alert")
+      i.fas.fa-exclamation-triangle.mr-2
+      | Gagal! Username tersebut sudah terdaftar di sistem. Silakan gunakan username lain.
+      button.close(type="button" data-dismiss="alert" aria-label="Close")
+        span(aria-hidden="true") &times;
+
   .row
     // Form Tambah Pengguna (Kiri)
     .col-xl-4.col-lg-5
@@ -11,7 +47,7 @@ block content
         .card-header.py-3.bg-primary
           h6.m-0.font-weight-bold.text-white Tambah Pengguna Baru
         .card-body
-          form(action="/users/tambah" method="POST")
+          form(action="/users/tambah" method="POST" onsubmit="return validateForm(this)")
             .form-group
               label Nama Lengkap
               input.form-control(type="text" name="nama" placeholder="Masukkan nama lengkap" required)
@@ -21,6 +57,10 @@ block content
             .form-group
               label Password
               input.form-control(type="password" name="password" placeholder="Masukkan password" required)
+            //- Tambahan Input Confirm Password
+            .form-group
+              label Konfirmasi Password
+              input.form-control(type="password" name="confirm_password" placeholder="Ulangi password" required)
             .form-group
               label Role / Jabatan
               select.form-control(name="role" required)
@@ -34,7 +74,7 @@ block content
               i.fas.fa-plus.mr-2
               | Simpan Pengguna
 
-
+    // Tabel Daftar Akun Sistem (Kanan)
     .col-xl-8.col-lg-7
       .card.shadow.mb-4
         .card-header.py-3
@@ -53,13 +93,12 @@ block content
                 if dataUsers && dataUsers.length > 0
                   each usr, index in dataUsers
                     tr
-                      <td>#{index + 1}</td>
-                      <td>#{usr.nama}</td>
-                      <td>#{usr.username}</td>
-                      <td>
+                      td #{index + 1}
+                      td #{usr.nama}
+                      td #{usr.username}
+                      td
                         span.badge.badge-secondary.p-2 #{usr.role.toUpperCase()}
-                      </td>
-                      <td>
+                      td
                         a.btn.btn-warning.btn-sm.mr-2(href=`/users/edit/${usr.id_user}`)
                           i.fas.fa-edit.mr-1
                           | Edit
@@ -69,3 +108,17 @@ block content
                 else
                   tr
                     td.text-center(colspan="5") Belum ada data pengguna.
+
+  //- SCRIPT VALIDASI FORM
+  script.
+    function validateForm(form) {
+      const password = form.password.value;
+      const confirmPassword = form.confirm_password.value;
+      
+      if (password !== confirmPassword) {
+        alert("Peringatan: Password dan Konfirmasi Password tidak sama!");
+        form.confirm_password.focus();
+        return false;
+      }
+      return true;
+    }

@@ -78,6 +78,7 @@ router.post('/detail/:id/review', isKaprodi, (req, res) => {
 router.post('/lock/:id', isKaprodi, (req, res) => {
     const id_draf = req.params.id;
 
+    // logika nya salah disini
     db.query("SELECT COUNT(*) AS pending_count FROM detail_draf WHERE id_draf = ? AND status_approval = 'pending'", [id_draf], (err, result) => {
         if (err) return res.status(500).send(err.message);
         

@@ -30,7 +30,7 @@ CREATE TABLE `bhp` (
   `id_bhp` INT NOT NULL AUTO_INCREMENT,
   `nama_bhp` VARCHAR(100) NOT NULL,
   `stok` INT NOT NULL DEFAULT 0,
-  `satuan` VARCHAR(20) NOT NULL, -- Contoh: 'Pcs', 'Rim', 'Botol'
+  `satuan` VARCHAR(20) NOT NULL, 
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_bhp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -44,7 +44,7 @@ CREATE TABLE `inventaris` (
   `nama_barang` VARCHAR(100) NOT NULL,
   `kondisi` ENUM('baik', 'rusak', 'maintenance', 'dihapus') NOT NULL DEFAULT 'baik',
   `id_ruangan` INT NOT NULL,
-  `foto_qr` VARCHAR(255) DEFAULT NULL, -- Menyimpan nama/path file foto QR/Barcode yang diupload Staf Admin
+  `foto_qr` VARCHAR(255) DEFAULT NULL, 
   PRIMARY KEY (`id_inventaris`),
   CONSTRAINT `fk_inventaris_ruangan` FOREIGN KEY (`id_ruangan`) REFERENCES `ruangan` (`id_ruangan`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
