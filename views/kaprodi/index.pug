@@ -5,6 +5,19 @@ block content
     h1.h3.mb-0.text-gray-800 Dashboard Ketua Program Studi
 
   .card.shadow.mb-4
+    .card-body
+      form.form-inline(action="/kaprodi" method="GET")
+        label.mr-2.font-weight-bold Filter Tahun Anggaran:
+        select.form-control.form-control-sm.mr-2(name="tahun")
+          option(value="") -- Semua Tahun --
+          if dataTahun
+            each t in dataTahun
+              option(value=t.tahun selected=(currentFilterTahun == t.tahun)) #{t.tahun}
+        button.btn.btn-primary.btn-sm(type="submit") 
+          i.fas.fa-filter.mr-1
+          | Terapkan
+
+  .card.shadow.mb-4
     .card-header.py-3
       h6.m-0.font-weight-bold.text-primary Daftar Usulan Pengadaan Menunggu Review
     .card-body

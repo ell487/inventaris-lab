@@ -57,12 +57,16 @@ html(lang="en")
               i.fas.fa-fw.fa-chart-pie
               span Monitoring Asset & BHP
 
-        //- MENU KHUSUS KAPRODI 
+        //- MENU KHUSUS KAPRODI
         if user.role === 'kaprodi'
           li.nav-item
             a.nav-link(href="/kaprodi")
               i.fas.fa-fw.fa-check-double
               span Approval Draf
+          li.nav-item
+            a.nav-link(href="/kaprodi/monitoring")
+              i.fas.fa-fw.fa-chart-pie
+              span Monitoring Asset & BHP
 
         //- MENU KHUSUS STAF ADMINISTRASI 
         if user.role === 'staf_admin'
@@ -128,8 +132,7 @@ html(lang="en")
             button.btn.btn-secondary(type="button" data-dismiss="modal") Batal
             a.btn.btn-danger(href="/logout") Logout
 
-    
-    // Bootstrap & Core Javascript Javascript 
+    // Bootstrap & Core Javascript
     script(src="/vendor/jquery/jquery.min.js")
     script(src="/vendor/bootstrap/js/bootstrap.bundle.min.js")
     script(src="/vendor/jquery-easing/jquery.easing.min.js")

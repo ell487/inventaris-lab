@@ -1,0 +1,69 @@
+extends ../layouts/main
+
+block content
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Monitoring Inventaris & BHP 
+
+
+  .card.shadow.mb-4
+    .card-body
+      form.form-inline(action="/kaprodi/monitoring" method="GET")
+        label.mr-2.font-weight-bold Tahun Anggaran:
+        select.form-control.form-control-sm.mr-3(name="tahun")
+          option(value="") -- Semua Tahun --
+          if dataTahun
+            each t in dataTahun
+              option(value=t.tahun_pengadaan selected=(currentFilterTahun == t.tahun_pengadaan)) #{t.tahun_pengadaan}
+        
+        label.mr-2.font-weight-bold Penempatan Ruangan:
+        select.form-control.form-control-sm.mr-3(name="ruangan")
+          option(value="all") -- Semua Ruangan --
+          if dataRuangan
+            each r in dataRuangan
+              option(value=r.id_ruangan selected=(currentFilterRuangan == r.id_ruangan)) #{r.nama_ruangan}
+              
+        button.btn.btn-primary.btn-sm(type="submit")
+          i.fas.fa-filter.mr-1
+          | Saring Data
+
+
+  .card.shadow.mb-4
+    .card-header.py-3.bg-dark.text-white
+      h6.m-0.font-weight-bold Data Inventarisasi Kampus Aktif
+    .card-body
+      .table-responsive
+        table.table.table-striped.table-bordered(width="100%" cellspacing="0")
+          thead
+            tr
+              th No
+              th Kode QR / Label
+              th Nama Komoditas / Barang
+              th Klasifikasi Tipe
+              th Kondisi Fisik
+              th Lokasi Ruang
+              th Tahun Masuk
+          tbody
+            if dataBarang && dataBarang.length > 0
+              each barang, idx in dataBarang
+                tr
+                  td #{idx + 1}
+                  td
+                    span.font-weight-bold.text-monospace #{barang.kode_label_qr}
+                  td #{barang.nama_barang}
+                  td
+                    if barang.tipe_barang === 'inventaris'
+                      span.badge.badge-primary Aset Mutlak
+                    else
+                      span.badge.badge-info Bahan Habis Pakai
+                  td
+                    if barang.kondisi === 'baik'
+                      span.text-success.font-weight-bold Baik
+                    else if barang.kondisi === 'rusak'
+                      span.text-warning.font-weight-bold Rusak Ringan
+                    else
+                      span.text-danger #{barang.kondisi}
+                  td #{barang.nama_ruangan || 'Gudang Utama'}
+                  td #{barang.tahun_pengadaan || '-'}
+            else
+              tr
+                td.text-center(colspan="7") Tidak ditemukan data aset yang sesuai dengan kriteria penyaringan.

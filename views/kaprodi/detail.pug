@@ -63,7 +63,7 @@ block content
                         else if item.status_approval === 'ditolak'
                           span.badge.badge-danger Ditolak
                         else
-                          span.badge.badge-secondary #{item.status_approval}
+                          span.badge.badge-secondary #{item.status_approval || 'Belum Direview'}
               else
                 tr
                   td.text-center(colspan="7") Belum ada rincian barang.
