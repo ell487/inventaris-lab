@@ -21,10 +21,15 @@ block content
             .card-header.bg-dark.text-white.py-1.small.font-weight-bold
               | PROPERTI LAB - INVENTARIS
             .card-body.p-2
-
               img(src=asset.foto_qr alt=asset.kode_label_qr style="width: 140px; height: 140px;")
               h6.font-weight-bold.mt-2.mb-1.text-dark #{asset.nama_barang}
-              div.badge.badge-secondary.text-wrap(style="font-size: 11px;") #{asset.kode_label_qr}
+              
+              //- Tampilkan Kode Aplikasi Internal
+              div.badge.badge-primary.text-wrap.mb-1(style="font-size: 11px; display: block;") ID SISTEM: #{asset.kode_label_qr}
+              
+              //- Tampilkan Kode Universitas Jika Tersedia
+              if asset.kode_universitas
+                div.badge.badge-secondary.text-wrap(style="font-size: 11px; display: block;") ID UNIV: #{asset.kode_universitas}
     else
       .col-12.text-center
         p Tidak ada label yang siap dicetak.

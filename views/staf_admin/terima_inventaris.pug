@@ -2,14 +2,19 @@ extends ../layouts/main
 
 block content
   .mb-4
-    h1.h3.text-gray-800 Registrasi Label Aset Fisik
+    a.btn.btn-secondary.btn-sm(href=`/staf-admin/draf/${item.id_draf}`) 
+      i.fas.fa-arrow-left.mr-1
+      | Kembali ke Detail Draf
+    h1.h3.mt-2.text-gray-800 Registrasi Label Aset Fisik
 
   .row
     .col-lg-6
       .card.shadow.mb-4
         .card-header.py-3.bg-info
-          h6.m-0.font-weight-bold.text-white Formulir Penerimaan & Auto-Generate QR
+          h6.m-0.font-weight-bold.text-white Formulir Penerimaan & Auto-Generate QR Dual-Sistem
         .card-body
+          - var sisaKuota = item.jumlah - item.total_diterima
+          
           form(action=`/staf-admin/terima-inventaris/${item.id_detail}` method="POST")
             input(type="hidden" name="id_draf" value=item.id_draf)
             input(type="hidden" name="nama_barang" value=item.nama_barang)
@@ -18,11 +23,26 @@ block content
               label Nama Item Barang
               input.form-control(type="text" value=item.nama_barang disabled)
             
-            //- BARU: Menginput jumlah unit yang datang untuk memicu looping otomatis di backend
+            .row
+              .col-6
+                .form-group
+                  label Target Total
+                  input.form-control(type="text" value=`${item.jumlah} Unit` disabled)
+              .col-6
+                .form-group
+                  label Sudah Diterima
+                  input.form-control(type="text" value=`${item.total_diterima} Unit` disabled)
+
             .form-group
-              label Jumlah Barang yang Diterima (Unit)
-              input.form-control(type="number" name="jumlah_diterima" min="1" placeholder="Contoh: 5" required)
-            
+              label Jumlah Barang yang Datang Saat Ini (Unit)
+              input.form-control(type="number" name="jumlah_diterima" min="1" max=sisaKuota placeholder=`Maksimal masukkan ${sisaKuota} unit` required)
+              small.text-danger *Sistem akan otomatis menolak input jika melebihi sisa kapasitas kuota (#{sisaKuota} unit).
+
+            .form-group
+              label Kode QR Aset Universitas (Opsional / Manual Jika Ada)
+              input.form-control(type="text" name="kode_univ_base" placeholder="Contoh: UNIKOM-INV-FT-")
+              small.text-muted *Jika diisi, sistem otomatis melampirkan indeks berurutan di belakang kode dasar universitas ini.
+
             .form-group
               label Penempatan Lokasi Ruangan
               select.form-control(name="id_ruangan" required)
@@ -36,4 +56,4 @@ block content
             
             button.btn.btn-info.btn-block(type="submit")
               i.fas.fa-magic.mr-1
-              | Simpan & Generate QR Otomatis
+              | Simpan Penerimaan & Generate QR Code

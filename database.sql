@@ -173,21 +173,18 @@ INSERT INTO users (nama, username, password, role) VALUES
 ('Wenny', 'admin', 'password', 'admin'),
 ('Robby', 'kalab', 'password', 'kepala_lab'),
 ('Rosevine Arta', 'kaprodi', 'password', 'kaprodi'),
-('Teddy Marcus', 'satfadmin', 'password', 'staf_admin'),
+('Teddy Marcus', 'stafadmin', 'password', 'staf_admin'),
 ('Denzel', 'staflab', 'password', 'staf_lab');
 
 
 -- DATA RUANGAN
 
-
 INSERT INTO ruangan (nama_ruangan) VALUES
 ('Lab Multimedia'),
 ('Lab Adv 1'),
-('Lab Adv 2'),
-
+('Lab Adv 2');
 
 -- DATA BHP
-
 
 INSERT INTO bhp (nama_bhp, stok, satuan, id_ruangan, tahun_pengadaan) VALUES
 ('Kabel UTP Cat6', 15, 'Roll', 2, 2025),
@@ -198,7 +195,6 @@ INSERT INTO bhp (nama_bhp, stok, satuan, id_ruangan, tahun_pengadaan) VALUES
 ('Keyboard USB', 20, 'Unit', 1, 2025),
 ('Thermal Paste', 10, 'Tube', 3, 2025),
 ('Flashdisk 32GB', 15, 'Unit', 2, 2025);
-
 
 -- DATA INVENTARIS
 

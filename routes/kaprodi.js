@@ -92,30 +92,50 @@ router.post('/detail/:id/review', isKaprodi, (req, res) => {
         .catch(err => res.status(500).send(err.message));
 });
 
-// 4. FINALISASI DRAF 
+// 4. FINALISASI DRAF (Simpan Pilihan di Layar Lalu Kunci)
 router.post('/lock/:id', isKaprodi, (req, res) => {
     const id_draf = req.params.id;
+    const reviewData = req.body; // Mengambil data pilihan radio button dari form
 
-    
-    const checkQuery = `
-        SELECT COUNT(*) AS unreviewed_count 
-        FROM detail_draf 
-        WHERE id_draf = ? 
-        AND (status_approval IS NULL OR status_approval NOT IN ('disetujui', 'ditolak'))
-    `;
-
-    db.query(checkQuery, [id_draf], (err, result) => {
-        if (err) return res.status(500).send(err.message);
-        
-        if (result[0].unreviewed_count > 0) {
-            return res.send('<script>alert("Masih ada barang yang belum Anda review (Setuju/Tolak). Silakan cek kembali."); window.history.back();</script>');
+    // Langkah 1: Simpan dulu semua pilihan yang ada di layar ke database
+    const updatePromises = Object.keys(reviewData).map(key => {
+        if (key.startsWith('status_')) {
+            const id_detail = key.split('_')[1];
+            const status_approval = reviewData[key];
+            return new Promise((resolve, reject) => {
+                db.query('UPDATE detail_draf SET status_approval = ? WHERE id_detail = ?', [status_approval, id_detail], (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
         }
-        
-        db.query("UPDATE draf_pengadaan SET status_draf = 'locked' WHERE id_draf = ?", [id_draf], (err) => {
-            if (err) return res.status(500).send(err.message);
-            res.redirect('/kaprodi');
-        });
+        return Promise.resolve();
     });
+
+    // Langkah 2: Setelah tersimpan, cek apakah ada yang terlewat, lalu KUNCI
+    Promise.all(updatePromises)
+        .then(() => {
+            const checkQuery = `
+                SELECT COUNT(*) AS unreviewed_count 
+                FROM detail_draf 
+                WHERE id_draf = ? 
+                AND (status_approval IS NULL OR status_approval NOT IN ('disetujui', 'ditolak'))
+            `;
+
+            db.query(checkQuery, [id_draf], (err, result) => {
+                if (err) return res.status(500).send(err.message);
+                
+                if (result[0].unreviewed_count > 0) {
+                    return res.send('<script>alert("Masih ada barang yang belum Anda review (Setuju/Tolak). Silakan lengkapi terlebih dahulu."); window.history.back();</script>');
+                }
+                
+                db.query("UPDATE draf_pengadaan SET status_draf = 'locked' WHERE id_draf = ?", [id_draf], (err) => {
+                    if (err) return res.status(500).send(err.message);
+                    res.redirect('/kaprodi');
+                });
+            });
+        })
+        .catch(err => res.status(500).send(err.message));
 });
 
 // 5. MONITORING INVENTARIS & BHP 
