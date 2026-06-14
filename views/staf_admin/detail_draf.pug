@@ -2,52 +2,62 @@ extends ../layouts/main
 
 block content
   .mb-4
-    a.btn.btn-secondary.btn-sm(href="/staf-admin") 
+    a.btn.btn-secondary.btn-sm(href="/staf-admin")
       i.fas.fa-arrow-left.mr-1
-      | Kembali
-    h1.h3.mt-2.text-gray-800 Detail Barang & Penerimaan
+      | Kembali ke Dashboard
+    h1.h3.mt-2.text-gray-800 Rincian Item: #{draf.judul_draf}
 
   .card.shadow.mb-4
+    .card-header.py-3.bg-primary.text-white
+      h6.m-0.font-weight-bold Daftar Perangkat & Logistik Disetujui
     .card-body
       .table-responsive
-        table.table.table-bordered
-          thead
+        table.table.table-bordered.table-hover
+          thead.thead-light
             tr
+              th No
               th Nama Barang
-              th Tipe
-              th Target Kebutuhan
-              th Total Diterima Saat Ini
-              th Aksi Registrasi
+              th Jenis
+              th Kebutuhan Draf
+              th Total Diterima
+              th Sisa Kuota
+              th Aksi
           tbody
             if dataItems && dataItems.length > 0
-              each item in dataItems
+              each item, index in dataItems
+                - var sisa = item.jumlah - item.total_diterima
+                - var jenis = item.tipe_barang || 'inventaris'
                 tr
-                  td #{item.nama_barang}
+                  td #{index + 1}
+                  td.font-weight-bold #{item.nama_barang}
                   td 
-                    span.badge.badge-secondary #{item.tipe_barang.toUpperCase()}
-                  td #{item.jumlah} Unit
-                  td #{item.total_diterima} Unit
-                  td
-                 
-                    if item.total_diterima < item.jumlah && item.tipe_barang === 'inventaris'
-                      a.btn.btn-info.btn-sm.mr-1(href=`/staf-admin/terima-inventaris/${item.id_detail}`)
-                        i.fas.fa-magic.mr-1
-                        | Input Penerimaan & QR
-                    
-                   
-                    else if item.total_diterima < item.jumlah && item.tipe_barang === 'bhp'
-                      a.btn.btn-warning.btn-sm(href=`/staf-admin/terima-bhp/${item.id_detail}`)
-                        i.fas.fa-plus.mr-1
-                        | Tambah Stok BHP
-                    
-                   
+                    span.badge(class=jenis === 'inventaris' ? 'badge-info' : 'badge-warning') #{jenis.toUpperCase()}
+                  td.font-weight-bold #{item.jumlah} Unit
+                  td.text-primary.font-weight-bold #{item.total_diterima} Unit
+                  td 
+                    if sisa === 0
+                      span.badge.badge-success Lunas / Terpenuhi
                     else
-                      span.badge.badge-success.mr-1 Selesai Diterima
-
-                    if item.total_diterima > 0 && item.tipe_barang === 'inventaris'
-                      a.btn.btn-dark.btn-sm(href=`/staf-admin/cetak-label/${item.id_detail}`)
-                        i.fas.fa-print.mr-1
+                      span.badge.badge-danger #{sisa} Unit Lagi
+                  td
+                    if sisa > 0
+                      if jenis === 'inventaris'
+                        a.btn.btn-sm.btn-primary.mr-2(href=`/staf-admin/terima-inventaris/${item.id_detail}`) 
+                          i.fas.fa-plus-circle.mr-1
+                          | Terima Barang
+                      else
+                        a.btn.btn-sm.btn-warning.mr-2(href=`/staf-admin/terima-bhp/${item.id_detail}`) 
+                          i.fas.fa-layer-group.mr-1
+                          | Tambah BHP
+                    else
+                      span.text-success.small.font-weight-bold.mr-2
+                        i.fas.fa-check-double.mr-1
+                        | Selesai
+                    
+                    if item.total_diterima > 0 && jenis === 'inventaris'
+                      a.btn.btn-sm.btn-dark(href=`/staf-admin/cetak-label/${item.id_detail}`) 
+                        i.fas.fa-qrcode.mr-1
                         | Cetak QR
             else
               tr
-                td.text-center(colspan="5") Tidak ada item yang disetujui dalam draf ini.
+                td.text-center(colspan="7") Belum ada item di draf ini.

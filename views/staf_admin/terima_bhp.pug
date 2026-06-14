@@ -2,29 +2,45 @@ extends ../layouts/main
 
 block content
   .mb-4
-    h1.h3.text-gray-800 Formulir Penerimaan BHP (Barang Habis Pakai)
+    a.btn.btn-secondary.btn-sm(href=`/staf-admin/draf/${item.id_draf}`) 
+      i.fas.fa-times.mr-1
+      | Batal
+    h1.h3.mt-2.text-gray-800 Registrasi Logistik BHP
 
-  .row
-    .col-lg-6
-      .card.shadow.mb-4
-        .card-header.py-3.bg-warning
-          h6.m-0.font-weight-bold.text-white Catat Penerimaan Stok BHP
-        .card-body
-          form(action=`/staf-admin/terima-bhp/${item.id_detail}` method="POST")
-            input(type="hidden" name="id_draf" value=item.id_draf)
-            
+  .card.shadow.mb-4
+    .card-header.py-3.bg-warning.text-dark
+      h6.m-0.font-weight-bold Form Update Stok Barang Habis Pakai
+    .card-body
+      - var sisa = item.jumlah - item.total_diterima
+      form(action=`/staf-admin/terima-bhp/${item.id_detail}` method="POST")
+        input(type="hidden" name="id_draf" value=item.id_draf)
+        
+        .form-group
+          label.font-weight-bold Nama Kategori BHP
+          input.form-control(type="text" value=item.nama_barang disabled)
+        
+        .row
+          .col-md-6
             .form-group
-              label Nama Item BHP
-              input.form-control(type="text" value=item.nama_barang disabled)
-              
+              label.font-weight-bold Kebutuhan Sisa Draf
+              input.form-control(type="text" value=`${sisa} Unit` disabled)
+          .col-md-6
             .form-group
-              label Jumlah Unit Diterima (Parsial/Total)
-              input.form-control(type="number" name="jumlah_diterima" min="1" max=(item.jumlah - item.total_diterima) required)
-              
-            .form-group
-              label Tanggal Penerimaan Fisik
-              input.form-control(type="date" name="tanggal_penerimaan" required)
-            
-            button.btn.btn-warning.btn-block(type="submit")
-              i.fas.fa-plus.mr-1
-              | Simpan Penerimaan BHP
+              label.font-weight-bold Jumlah Masuk Gudang (Maks: #{sisa})
+              input.form-control(type="number" name="jumlah_diterima" min="1" max=sisa placeholder=`Masukkan kuantitas maksimal ${sisa}` required)
+        
+        .form-group
+          label.font-weight-bold Penempatan Gudang / Ruangan
+          select.form-control(name="id_ruangan" required)
+            option(value="") -- Pilih Lokasi Gudang --
+            if dataRuangan
+              each r in dataRuangan
+                option(value=r.id_ruangan) #{r.nama_ruangan}
+        
+        .form-group
+          label.font-weight-bold Tanggal Masuk Logistik
+          input.form-control(type="date" name="tanggal_penerimaan" required)
+          
+        button.btn.btn-warning.btn-block.font-weight-bold(type="submit") 
+          i.fas.fa-save.mr-1
+          | Masukkan Ke Stok Logistik

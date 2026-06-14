@@ -2,48 +2,35 @@ extends ../layouts/main
 
 block content
   .d-flex.justify-content-between.align-items-center.mb-4.d-print-none
-    h1.h3.text-gray-800 Cetak Label QR Code
-    button.btn.btn-primary.btn-lg(onclick="window.print()")
-      i.fas.fa-print.mr-2
-      | Cetak / Print Label
-
-  .card.shadow.mb-4.d-print-none
-    .card-body.bg-light
-      p.mb-0.text-dark 
-        i.fas.fa-info-circle.mr-2
-        | Klik tombol <b>Cetak / Print Label</b> di atas. Sistem akan otomatis membuka dialog print komputer Anda. Bagian menu samping dan atas otomatis disembunyikan saat dicetak.
+    h1.h3.text-gray-800 Lembar Cetak QR
+    div
+      a.btn.btn-secondary.mr-2(href=`/staf-admin/draf/${item.id_draf}`) Kembali
+      button.btn.btn-primary(onclick="window.print()")
+        i.fas.fa-print.mr-1
+        | Cetak Label
 
   .row
     if dataAssets && dataAssets.length > 0
       each asset in dataAssets
         .col-md-4.col-sm-6.mb-4
-          .card.text-center.border-dark.shadow-sm(style="max-width: 250px; margin: auto;")
-            .card-header.bg-dark.text-white.py-1.small.font-weight-bold
-              | PROPERTI LAB - INVENTARIS
-            .card-body.p-2
-              img(src=asset.foto_qr alt=asset.kode_label_qr style="width: 140px; height: 140px;")
-              h6.font-weight-bold.mt-2.mb-1.text-dark #{asset.nama_barang}
-              
-              //- Tampilkan Kode Aplikasi Internal
-              div.badge.badge-primary.text-wrap.mb-1(style="font-size: 11px; display: block;") ID SISTEM: #{asset.kode_label_qr}
-              
-              //- Tampilkan Kode Universitas Jika Tersedia
-              if asset.kode_universitas
-                div.badge.badge-secondary.text-wrap(style="font-size: 11px; display: block;") ID UNIV: #{asset.kode_universitas}
+          .card.text-center.border-dark(style="max-width: 220px; margin: auto; border: 2px solid #000; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);")
+            .card-header.bg-dark.text-white.py-1.small.font-weight-bold INVENTARIS LAB
+            .card-body.p-3
+              if asset.foto_qr
+                img(src=asset.foto_qr style="width: 140px; height: 140px; object-fit: contain;")
+              else
+                .p-3.bg-light.text-muted.small No QR Image
+              h6.font-weight-bold.mt-2.mb-1.text-dark(style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;") #{asset.nama_barang}
+              div.badge.badge-primary.mb-1.d-block(style="font-size: 11px;") ID: #{asset.kode_label_qr}
+              div.badge.badge-secondary.d-block(style="font-size: 10px;") TAHUN: #{asset.tahun_pengadaan}
     else
-      .col-12.text-center
-        p Tidak ada label yang siap dicetak.
+      .col-12.text-center.py-5
+        .text-muted Belum ada data aset yang ter-registrasi untuk dicetak.
 
   style.
     @media print {
-      .d-print-none, #accordionSidebar, .navbar, footer {
-        display: none !important;
-      }
-      #content-wrapper {
-        background: transparent !important;
-      }
-      .card {
-        border: 1px solid #000 !important;
-        page-break-inside: avoid;
-      }
+      .d-print-none, #accordionSidebar, .navbar, footer, .sidebar, .navbar-nav { display: none !important; }
+      body { background-color: #fff !important; margin: 0; padding: 0; }
+      .container-fluid { padding: 0 !important; }
+      .card { page-break-inside: avoid; border: 2px solid #000 !important; margin-bottom: 15px !important; }
     }

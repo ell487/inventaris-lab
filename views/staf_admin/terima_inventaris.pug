@@ -3,57 +3,45 @@ extends ../layouts/main
 block content
   .mb-4
     a.btn.btn-secondary.btn-sm(href=`/staf-admin/draf/${item.id_draf}`) 
-      i.fas.fa-arrow-left.mr-1
-      | Kembali ke Detail Draf
-    h1.h3.mt-2.text-gray-800 Registrasi Label Aset Fisik
+      i.fas.fa-times.mr-1
+      | Batal
+    h1.h3.mt-2.text-gray-800 Registrasi Inventaris Baru
 
-  .row
-    .col-lg-6
-      .card.shadow.mb-4
-        .card-header.py-3.bg-info
-          h6.m-0.font-weight-bold.text-white Formulir Penerimaan & Auto-Generate QR Dual-Sistem
-        .card-body
-          - var sisaKuota = item.jumlah - item.total_diterima
-          
-          form(action=`/staf-admin/terima-inventaris/${item.id_detail}` method="POST")
-            input(type="hidden" name="id_draf" value=item.id_draf)
-            input(type="hidden" name="nama_barang" value=item.nama_barang)
-            
+  .card.shadow.mb-4
+    .card-header.py-3.bg-info.text-white
+      h6.m-0.font-weight-bold Form Penerimaan & Pembuatan Identitas Asset (QR)
+    .card-body
+      - var sisa = item.jumlah - item.total_diterima
+      form(action=`/staf-admin/terima-inventaris/${item.id_detail}` method="POST")
+        input(type="hidden" name="id_draf" value=item.id_draf)
+        input(type="hidden" name="nama_barang" value=item.nama_barang)
+        
+        .form-group
+          label.font-weight-bold Nama Item Barang
+          input.form-control(type="text" value=item.nama_barang disabled)
+        
+        .row
+          .col-md-6
             .form-group
-              label Nama Item Barang
-              input.form-control(type="text" value=item.nama_barang disabled)
-            
-            .row
-              .col-6
-                .form-group
-                  label Target Total
-                  input.form-control(type="text" value=`${item.jumlah} Unit` disabled)
-              .col-6
-                .form-group
-                  label Sudah Diterima
-                  input.form-control(type="text" value=`${item.total_diterima} Unit` disabled)
-
+              label.font-weight-bold Belum Terpenuhi
+              input.form-control(type="text" value=`${sisa} Unit` disabled)
+          .col-md-6
             .form-group
-              label Jumlah Barang yang Datang Saat Ini (Unit)
-              input.form-control(type="number" name="jumlah_diterima" min="1" max=sisaKuota placeholder=`Maksimal masukkan ${sisaKuota} unit` required)
-              small.text-danger *Sistem akan otomatis menolak input jika melebihi sisa kapasitas kuota (#{sisaKuota} unit).
-
-            .form-group
-              label Kode QR Aset Universitas (Opsional / Manual Jika Ada)
-              input.form-control(type="text" name="kode_univ_base" placeholder="Contoh: UNIKOM-INV-FT-")
-              small.text-muted *Jika diisi, sistem otomatis melampirkan indeks berurutan di belakang kode dasar universitas ini.
-
-            .form-group
-              label Penempatan Lokasi Ruangan
-              select.form-control(name="id_ruangan" required)
-                if dataRuangan
-                  each rgn in dataRuangan
-                    option(value=rgn.id_ruangan) #{rgn.nama_ruangan}
-            
-            .form-group
-              label Tanggal Penerimaan Fisik
-              input.form-control(type="date" name="tanggal_penerimaan" required)
-            
-            button.btn.btn-info.btn-block(type="submit")
-              i.fas.fa-magic.mr-1
-              | Simpan Penerimaan & Generate QR Code
+              label.font-weight-bold Kuantitas Datang (Maks: #{sisa})
+              input.form-control(type="number" name="jumlah_diterima" min="1" max=sisa placeholder=`Contoh: ${sisa}` required)
+        
+        .form-group
+          label.font-weight-bold Penempatan Ruangan Laboratorium
+          select.form-control(name="id_ruangan" required)
+            option(value="") -- Pilih Ruangan --
+            if dataRuangan
+              each r in dataRuangan
+                option(value=r.id_ruangan) #{r.nama_ruangan}
+        
+        .form-group
+          label.font-weight-bold Tanggal Resmi Penerimaan
+          input.form-control(type="date" name="tanggal_penerimaan" required)
+        
+        button.btn.btn-info.btn-block.font-weight-bold(type="submit") 
+          i.fas.fa-qrcode.mr-1
+          | Generate QR Code & Daftarkan Aset
