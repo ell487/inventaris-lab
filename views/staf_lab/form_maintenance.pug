@@ -2,13 +2,13 @@ extends ../layouts/main
 
 block content
   .mb-4
-    a.btn.btn-secondary.btn-sm(href="/staf-lab") 
+    a.btn.btn-secondary.btn-sm(href="/staf-lab/monitoring-inventaris") 
       i.fas.fa-arrow-left.mr-1
       | Kembali
     h1.h3.mt-2.text-gray-800 Form Aktivitas Maintenance Aset
 
   .row
-    .col-lg-6
+    .col-lg-7
       .card.shadow.mb-4
         .card-header.py-3.bg-success
           h6.m-0.font-weight-bold.text-white Laporan Perbaikan: #{asset.nama_barang} [#{asset.kode_label_qr}]
@@ -16,15 +16,23 @@ block content
           form(action=`/staf-lab/maintenance/${asset.id_inventaris}` method="POST")
             
             .form-group
-              label Deskripsi Kerusakan & Aktivitas Perbaikan
+              label.font-weight-bold Deskripsi Kerusakan & Aktivitas Perbaikan
               textarea.form-control(name="deskripsi_kegiatan" rows="3" placeholder="Contoh: Mengganti thermal paste processor karena suhu PC overheat..." required)
             
             .form-group
-              label Tanggal Eksekusi Maintenance
+              label.font-weight-bold Tanggal Eksekusi Maintenance
               input.form-control(type="date" name="tanggal_maintenance" required)
+
+            //- BAGIAN BARU: MENENTUKAN KONDISI BARU BARANG AGAR UPDATE KE DB BERJALAN BENAR
+            .form-group
+              label.font-weight-bold Tentukan Status Kondisi Baru Perangkat
+              select.form-control(name="kondisi_baru" required)
+                option(value="baik" selected=asset.kondisi==='baik') Baik (Selesai Diperbaiki & Siap Pakai)
+                option(value="maintenance" selected=asset.kondisi==='maintenance') Tetap Maintenance (Belum Selesai)
+                option(value="rusak" selected=asset.kondisi==='rusak') Rusak (Rusak Total / Tidak Bisa Diselamatkan)
             
             .form-group
-              label Apakah Perbaikan Ini Memotong Stok BHP?
+              label.font-weight-bold Apakah Perbaikan Ini Memotong Stok BHP?
               select.form-control#pilihBHP(name="menggunakan_bhp" onchange="toggleBhpSection(this.value)")
                 option(value="tidak") Tidak, Hanya Perbaikan Fisik
                 option(value="ya") Ya, Menggunakan Komponen BHP
@@ -35,7 +43,7 @@ block content
                 select.form-control(name="id_bhp")
                   if dataBHP
                     each bhp in dataBHP
-                      option(value=bhp.id_bhp) #{bhp.nama_bhp} (Tersedia: #{bhp.stok} Unit)
+                      option(value=bhp.id_bhp) #{bhp.nama_bhp} (Tersedia: #{bhp.stok} #{bhp.satuan})
               .form-group
                 label Jumlah yang Digunakan
                 input.form-control(type="number" name="jumlah_bhp_digunakan" min="1" value="1")

@@ -2,29 +2,53 @@ extends ../layouts/main
 
 block content
   .mb-4
-    h1.h3.text-gray-800 Halaman Monitoring Barang Habis Pakai (BHP)
+    h1.h3.text-gray-800 Monitoring Stok BHP (Logistik)
 
-  .row
-    .col-lg-12
-      .card.shadow.mb-4
-        .card-header.py-3.bg-warning
-          h6.m-0.font-weight-bold.text-dark Detail Stok Suku Cadang & Logistik
-        .card-body
-          .table-responsive
-            table.table.table-striped
-              thead
+  .card.shadow.mb-4
+    .card-header.py-3.bg-light
+      h6.m-0.font-weight-bold.text-warning: i.fas.fa-boxes.mr-2 Filter & Pencarian Logistik BHP
+    .card-body
+      form(method="GET" action="/staf-lab/monitoring-bhp")
+        .row
+          .col-md-4.mb-3
+            label.font-weight-bold Status Ketersediaan
+            select.form-control(name="status_stok")
+              option(value="") -- Semua Status Stok --
+              option(value="aman" selected=filters.status_stok==='aman') Stok Aman (> 5 Unit)
+              option(value="kritis" selected=filters.status_stok==='kritis') Stok Kritis (≤ 5 Unit)
+          .col-md-5.mb-3
+            label.font-weight-bold Cari Nama Barang / Lokasi Rak
+            input.form-control(type="text" name="keyword" value=filters.keyword placeholder="Contoh: Tinta, Kabel...")
+          .col-md-3.mb-3.d-flex.align-items-end
+            button.btn.btn-warning.btn-block.text-dark.font-weight-bold(type="submit")
+              i.fas.fa-search.mr-2
+              | Cari Data
+            if filters.status_stok || filters.keyword
+              a.btn.btn-secondary.ml-2(href="/staf-lab/monitoring-bhp") Reset
+
+  .card.shadow.mb-4
+    .card-header.py-3.bg-warning
+      h6.m-0.font-weight-bold.text-dark Ketersediaan Suku Cadang & Bahan Habis Pakai
+    .card-body
+      .table-responsive
+        table.table.table-striped.table-bordered.table-hover
+          thead
+            tr
+              th Nama Bahan Habis Pakai
+              th Sisa Stok Gudang
+              th Satuan
+              th Tahun Pengadaan
+          tbody
+            if dataBHP && dataBHP.length > 0
+              each bhp in dataBHP
                 tr
-                  th Nama Barang BHP
-                  th Sisa Stok
-              tbody
-                if dataBHP && dataBHP.length > 0
-                  each bhp in dataBHP
-                    tr
-                      td #{bhp.nama_bhp}
-                      td
-                        span.font-weight-bold(class=bhp.stok <= 5 ? 'text-danger' : 'text-success') #{bhp.stok} Unit
-                        if bhp.stok <= 5
-                          span.badge.badge-danger.ml-2 Segera Ambil!
-                else
-                  tr
-                    td.text-center(colspan="2") Data stok BHP kosong.
+                  td.font-weight-bold #{bhp.nama_bhp}
+                  td
+                    span.font-weight-bold(class=bhp.stok <= 5 ? 'text-danger' : 'text-success') #{bhp.stok} #{bhp.satuan}
+                    if bhp.stok <= 5
+                      span.badge.badge-danger.ml-2 Restock!
+                  td: span.badge.badge-light.border #{bhp.satuan || 'Pcs'}
+                  td #{bhp.tahun_pengadaan || '-'}
+            else
+              tr
+                td.text-center(colspan="5") Data tidak ditemukan.

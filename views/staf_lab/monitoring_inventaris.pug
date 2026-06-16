@@ -2,40 +2,68 @@ extends ../layouts/main
 
 block content
   .mb-4
-    h1.h3.text-gray-800 Halaman Monitoring Inventaris
+    h1.h3.text-gray-800 Halaman Monitoring Inventaris Fisik
 
-  .row
-    .col-lg-12
-      .card.shadow.mb-4
-        .card-header.py-3.bg-primary
-          h6.m-0.font-weight-bold.text-white Seluruh Data Aset Fisik Laboratorium
-        .card-body
-          .table-responsive
-            table.table.table-bordered
-              thead
+  .card.shadow.mb-4
+    .card-header.py-3.bg-light
+      h6.m-0.font-weight-bold.text-primary: i.fas.fa-filter.mr-2 Filter Data Alat & Fasilitas
+    .card-body
+      form(method="GET" action="/staf-lab/monitoring-inventaris")
+        .row
+          .col-md-4.mb-3
+            label.font-weight-bold Status Kondisi
+            select.form-control(name="kondisi")
+              option(value="") -- Semua Kondisi --
+              option(value="baik" selected=filters.kondisi==='baik') Baik (Siap Pakai)
+              option(value="maintenance" selected=filters.kondisi==='maintenance') Maintenance
+              option(value="rusak" selected=filters.kondisi==='rusak') Rusak
+          .col-md-4.mb-3
+            label.font-weight-bold Lokasi Ruangan Lab
+            select.form-control(name="id_ruangan")
+              option(value="") -- Semua Ruangan --
+              if dataRuangan
+                each room in dataRuangan
+                  option(value=room.id_ruangan selected=filters.id_ruangan==room.id_ruangan.toString()) #{room.nama_ruangan}
+          .col-md-4.mb-3.d-flex.align-items-end
+            button.btn.btn-primary.btn-block(type="submit")
+              i.fas.fa-search.mr-2
+              | Terapkan Filter
+            if filters.kondisi || filters.id_ruangan
+              a.btn.btn-secondary.ml-2(href="/staf-lab/monitoring-inventaris") Reset
+
+  .card.shadow.mb-4
+    .card-header.py-3.bg-primary
+      h6.m-0.font-weight-bold.text-white Seluruh Data Aset Fisik Laboratorium
+    .card-body
+      .table-responsive
+        table.table.table-bordered.table-hover
+          thead
+            tr
+              th Kode Label
+              th Nama Barang
+              th Lokasi Ruang
+              th Status Kondisi
+              th Tindakan Pemeliharaan
+          tbody
+            if dataInventaris && dataInventaris.length > 0
+              each asset in dataInventaris
                 tr
-                  th Kode Label
-                  th Nama Barang
-                  th Lokasi Ruang
-                  th Status Kondisi
-                  th Tindakan
-              tbody
-                if dataInventaris && dataInventaris.length > 0
-                  each asset in dataInventaris
-                    tr
-                      td: span.badge.badge-dark #{asset.kode_label_qr}
-                      td #{asset.nama_barang}
-                      td #{asset.nama_ruangan || 'Belum Ditempatkan'}
-                      td
-                        form(action=`/staf-lab/update-kondisi/${asset.id_inventaris}` method="POST")
-                          select.form-control.form-control-sm(name="kondisi" onchange="this.form.submit()")
-                            option(value="baik" selected=asset.kondisi==='baik') Baik
-                            option(value="rusak_ringan" selected=asset.kondisi==='rusak_ringan') Rusak Ringan
-                            option(value="rusak_berat" selected=asset.kondisi==='rusak_berat') Rusak Berat
-                      td
-                        a.btn.btn-success.btn-sm(href=`/staf-lab/maintenance/${asset.id_inventaris}`)
-                          i.fas.fa-tools.mr-1
-                          | Catat Perbaikan
-                else
-                  tr
-                    td.text-center(colspan="5") Belum ada data inventaris fisik di dalam laboratorium.
+                  td: span.badge.badge-dark #{asset.kode_label_qr}
+                  td.font-weight-bold #{asset.nama_barang}
+                  td #{asset.nama_ruangan || 'Belum Ditempatkan'}
+                  td
+                    if asset.kondisi === 'baik'
+                      span.badge.badge-success.p-2.btn-block.text-center Baik
+                    else if asset.kondisi === 'maintenance'
+                      span.badge.badge-warning.p-2.btn-block.text-dark.text-center Maintenance
+                    else if asset.kondisi === 'rusak'
+                      span.badge.badge-danger.p-2.btn-block.text-center Rusak
+                    else if asset.kondisi === 'dihapus'
+                      span.badge.badge-secondary.p-2.btn-block.text-center Dihapus
+                  td
+                    a.btn.btn-outline-success.btn-sm.btn-block(href=`/staf-lab/maintenance/${asset.id_inventaris}`)
+                      i.fas.fa-tools.mr-1
+                      | Catat Perbaikan
+            else
+              tr
+                td.text-center(colspan="5") Data tidak ditemukan.

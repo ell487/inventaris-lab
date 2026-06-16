@@ -1,18 +1,55 @@
 extends ../layouts/main
 
 block content
-  .mb-4
-    h1.h3.text-gray-800 Dashboard Pengelolaan Staf Laboratorium
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Dashboard Pengelolaan Staf Laboratorium
+    span.badge.badge-primary.p-2 Logged in: #{user.nama}
 
+  //- METRIC CARDS LENGKAP
+  .row
+    .col-xl-3.col-md-6.mb-4
+      .card.border-left-primary.shadow.h-100.py-2
+        .card-body
+          .row.no-gutters.align-items-center
+            .col.mr-2
+              .text-xs.font-weight-bold.text-primary.text-uppercase.mb-1 Total Inventaris
+              .h5.mb-0.font-weight-bold.text-gray-800 #{stats.totalAset} Unit
+            .col-auto: i.fas.fa-boxes.fa-2x.text-gray-300
+    .col-xl-3.col-md-6.mb-4
+      .card.border-left-danger.shadow.h-100.py-2
+        .card-body
+          .row.no-gutters.align-items-center
+            .col.mr-2
+              .text-xs.font-weight-bold.text-danger.text-uppercase.mb-1 Kondisi Rusak
+              .h5.mb-0.font-weight-bold.text-danger #{stats.asetRusak} Alat
+            .col-auto: i.fas.fa-times-circle.fa-2x.text-gray-300
+    .col-xl-3.col-md-6.mb-4
+      .card.border-left-warning.shadow.h-100.py-2
+        .card-body
+          .row.no-gutters.align-items-center
+            .col.mr-2
+              .text-xs.font-weight-bold.text-warning.text-uppercase.mb-1 Sedang Maintenance
+              .h5.mb-0.font-weight-bold.text-warning #{stats.asetMaint} Alat
+            .col-auto: i.fas.fa-tools.fa-2x.text-gray-300
+    .col-xl-3.col-md-6.mb-4
+      .card.border-left-dark.shadow.h-100.py-2
+        .card-body
+          .row.no-gutters.align-items-center
+            .col.mr-2
+              .text-xs.font-weight-bold.text-dark.text-uppercase.mb-1 Logistik BHP Kritis
+              .h5.mb-0.font-weight-bold.text-dark #{stats.bhpKritis} Item
+            .col-auto: i.fas.fa-exclamation-triangle.fa-2x.text-gray-300
+
+  //- TABEL RIWAYAT LOG
   .row
     .col-lg-12
       .card.shadow.mb-4
         .card-header.py-3.bg-primary
-          h6.m-0.font-weight-bold.text-white 📋 Riwayat Aktivitas & Log Maintenance Aset
+          h6.m-0.font-weight-bold.text-white Riwayat Aktivitas & Log Maintenance Aset
         .card-body
           .table-responsive
             table.table.table-bordered.table-hover
-              thead
+              thead.thead-light
                 tr
                   th No
                   th Tanggal
@@ -27,9 +64,9 @@ block content
                     tr
                       td #{index + 1}
                       td #{new Date(log.tanggal_maintenance).toLocaleDateString('id-ID')}
-                      td #{log.nama_barang || 'Barang Dihapus'}
+                      td.font-weight-bold #{log.nama_barang || 'Barang Dihapus'}
                       td: span.badge.badge-dark #{log.kode_label_qr || '-'}
-                      td #{log.deskripsi_kegiatan}
+                      td #{log.deskripsi}
                       td
                         if log.nama_bhp
                           span.badge.badge-info #{log.nama_bhp}
@@ -37,7 +74,7 @@ block content
                           span.text-muted -
                       td
                         if log.jumlah_bhp_dipakai > 0
-                          | #{log.jumlah_bhp_dipakai} Unit
+                          span.font-weight-bold #{log.jumlah_bhp_dipakai} Unit
                         else
                           | -
                 else
