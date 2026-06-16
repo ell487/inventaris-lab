@@ -5,61 +5,41 @@ block content
     h1.h3.text-gray-800 Dashboard Pengelolaan Staf Laboratorium
 
   .row
-    .col-lg-8
+    .col-lg-12
       .card.shadow.mb-4
         .card-header.py-3.bg-primary
-          h6.m-0.font-weight-bold.text-white Monitoring Kondisi & Pemeliharaan Aset
+          h6.m-0.font-weight-bold.text-white 📋 Riwayat Aktivitas & Log Maintenance Aset
         .card-body
           .table-responsive
-            table.table.table-bordered
+            table.table.table-bordered.table-hover
               thead
                 tr
-                  th Kode Label
+                  th No
+                  th Tanggal
                   th Nama Barang
-                  th Lokasi Ruang
-                  th Status Kondisi
-                  th Tindakan
+                  th Kode Label
+                  th Deskripsi Kegiatan
+                  th BHP Digunakan
+                  th Jumlah
               tbody
-                if dataInventaris && dataInventaris.length > 0
-                  each asset in dataInventaris
+                if dataLog && dataLog.length > 0
+                  each log, index in dataLog
                     tr
-                      td: span.badge.badge-dark #{asset.kode_label_qr}
-                      td #{asset.nama_barang}
-                      td #{asset.nama_ruangan || 'Belum Ditempatkan'}
+                      td #{index + 1}
+                      td #{new Date(log.tanggal_maintenance).toLocaleDateString('id-ID')}
+                      td #{log.nama_barang || 'Barang Dihapus'}
+                      td: span.badge.badge-dark #{log.kode_label_qr || '-'}
+                      td #{log.deskripsi_kegiatan}
                       td
-                        form(action=`/staf-lab/update-kondisi/${asset.id_inventaris}` method="POST")
-                          select.form-control.form-control-sm(name="kondisi" onchange="this.form.submit()")
-                            option(value="baik" selected=asset.kondisi==='baik') Baik
-                            option(value="rusak_ringan" selected=asset.kondisi==='rusak_ringan') Rusak Ringan
-                            option(value="rusak_berat" selected=asset.kondisi==='rusak_berat') Rusak Berat
+                        if log.nama_bhp
+                          span.badge.badge-info #{log.nama_bhp}
+                        else
+                          span.text-muted -
                       td
-                        a.btn.btn-success.btn-sm(href=`/staf-lab/maintenance/${asset.id_inventaris}`)
-                          i.fas.fa-tools.mr-1
-                          | Catat Perbaikan
+                        if log.jumlah_bhp_dipakai > 0
+                          | #{log.jumlah_bhp_dipakai} Unit
+                        else
+                          | -
                 else
                   tr
-                    td.text-center(colspan="5") Belum ada data inventaris fisik di dalam laboratorium.
-
-    .col-lg-4
-      .card.shadow.mb-4
-        .card-header.py-3.bg-warning
-          h6.m-0.font-weight-bold.text-dark Kontrol Stok BHP
-        .card-body
-          .table-responsive
-            table.table.table-striped
-              thead
-                tr
-                  th Nama Barang BHP
-                  th Sisa Stok
-              tbody
-                if dataBHP && dataBHP.length > 0
-                  each bhp in dataBHP
-                    tr
-                      td #{bhp.nama_bhp}
-                      td
-                        span.font-weight-bold(class=bhp.stok <= 5 ? 'text-danger' : 'text-success') #{bhp.stok} Unit
-                        if bhp.stok <= 5
-                          span.badge.badge-danger.ml-2 Segera Ambil!
-                else
-                  tr
-                    td.text-center(colspan="2") Data stok BHP kosong.
+                    td.text-center(colspan="7") Belum ada riwayat maintenance yang tercatat.

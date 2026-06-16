@@ -74,13 +74,29 @@ html(lang="en")
             a.nav-link(href="/staf-admin")
               i.fas.fa-fw.fa-clipboard-check
               span Dashboard Penerimaan
+          li.nav-item
+            a.nav-link(href="/staf-admin/monitoring-inventaris")
+              i.fas.fa-fw.fa-desktop
+              span Monitoring Inventaris Lab
+          li.nav-item
+            a.nav-link(href="/staf-admin/monitoring-bhp")
+              i.fas.fa-fw.fa-boxes
+              span Monitoring Stok BHP
 
-        //- MENU KHUSUS STAF LABORATORIUM 
+        //- MENU KHUSUS STAF LABORATORIUM (SUDAH DITAMBAHKAN)
         if user.role === 'staf_lab'
           li.nav-item
             a.nav-link(href="/staf-lab")
               i.fas.fa-fw.fa-tools
               span Log Pemeliharaan
+          li.nav-item
+            a.nav-link(href="/staf-lab/monitoring-inventaris")
+              i.fas.fa-fw.fa-desktop
+              span Monitoring Inventaris Lab
+          li.nav-item
+            a.nav-link(href="/staf-lab/monitoring-bhp")
+              i.fas.fa-fw.fa-boxes
+              span Monitoring Stok BHP
       // END OF SIDEBAR
 
       // Content Wrapper

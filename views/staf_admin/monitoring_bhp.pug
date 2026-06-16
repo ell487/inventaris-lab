@@ -1,0 +1,34 @@
+extends ../layouts/main
+
+block content
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Monitoring Stok BHP (Logistik)
+    a.btn.btn-secondary.btn-sm(href="/staf-admin") Kembali
+
+  .card.shadow.mb-4
+    .card-header.py-3.bg-dark
+      h6.m-0.font-weight-bold.text-white Ketersediaan Suku Cadang Staf Lab
+    .card-body
+      .table-responsive
+        table.table.table-bordered.table-hover
+          thead.thead-light
+            tr
+              th No
+              th Nama Bahan Habis Pakai
+              th Stok Gudang
+              th Satuan
+              th Lokasi Penyimpanan
+              th Tahun Pengadaan
+          tbody
+            if dataBhp && dataBhp.length > 0
+              each bhp, index in dataBhp
+                tr
+                  td #{index + 1}
+                  td.font-weight-bold #{bhp.nama_bhp}
+                  td(class=bhp.stok <= 2 ? "text-danger font-weight-bold" : "text-success font-weight-bold") #{bhp.stok}
+                  td #{bhp.satuan || 'Pcs'}
+                  td #{bhp.nama_ruangan}
+                  td #{bhp.tahun_pengadaan}
+            else
+              tr
+                td.text-center(colspan="6") Belum ada stok BHP ter-input.

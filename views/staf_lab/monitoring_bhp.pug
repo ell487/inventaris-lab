@@ -1,0 +1,30 @@
+extends ../layouts/main
+
+block content
+  .mb-4
+    h1.h3.text-gray-800 Halaman Monitoring Barang Habis Pakai (BHP)
+
+  .row
+    .col-lg-12
+      .card.shadow.mb-4
+        .card-header.py-3.bg-warning
+          h6.m-0.font-weight-bold.text-dark Detail Stok Suku Cadang & Logistik
+        .card-body
+          .table-responsive
+            table.table.table-striped
+              thead
+                tr
+                  th Nama Barang BHP
+                  th Sisa Stok
+              tbody
+                if dataBHP && dataBHP.length > 0
+                  each bhp in dataBHP
+                    tr
+                      td #{bhp.nama_bhp}
+                      td
+                        span.font-weight-bold(class=bhp.stok <= 5 ? 'text-danger' : 'text-success') #{bhp.stok} Unit
+                        if bhp.stok <= 5
+                          span.badge.badge-danger.ml-2 Segera Ambil!
+                else
+                  tr
+                    td.text-center(colspan="2") Data stok BHP kosong.

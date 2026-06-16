@@ -230,23 +230,78 @@ router.post('/terima-bhp/:id_detail', isStafAdmin, (req, res) => {
     });
 });
 
-// 7. HALAMAN CETAK LABEL QR CODE (SINKRON DENGAN REKREASI VIEW)
+// 7. HALAMAN CETAK LABEL QR CODE (SINKRON DENGAN REKREASI VIEW BAWAAN)
 router.get('/cetak-label/:id_detail', isStafAdmin, (req, res) => {
     const id_detail = req.params.id_detail;
 
+    // Langkah A: Ambil detail draf pengadaan terlebih dahulu untuk mendapatkan nama_barang dan id_draf
     db.query('SELECT * FROM detail_draf WHERE id_detail = ?', [id_detail], (err, detailResult) => {
-        if (err || detailResult.length === 0) return res.status(404).send("Data draf tidak ditemukan");
-        const item = detailResult[0];
+        if (err) {
+            console.error("❌ Error Database Detail Draf:", err);
+            return res.status(500).send("Database Error: " + err.message);
+        }
+        
+        if (detailResult.length === 0) {
+            return res.status(404).send("Data draf tidak ditemukan.");
+        }
+        
+        const itemDraf = detailResult[0];
 
-        // Ambil data asset inventaris yang namanya sama untuk dicetak QR-nya
-        db.query('SELECT * FROM inventaris WHERE nama_barang = ? ORDER BY id_inventaris DESC', [item.nama_barang], (err, assets) => {
-            if (err) return res.status(500).send("Database Error: " + err.message);
+        // Langkah B: Ambil SEMUA asset fisik dari tabel inventaris yang memiliki nama_barang yang sama
+        // agar dicetak massal sesuai template Pug bawaan kamu
+        const queryAssets = `
+            SELECT * FROM inventaris 
+            WHERE nama_barang = ? 
+            ORDER BY id_inventaris DESC
+        `;
+        
+        db.query(queryAssets, [itemDraf.nama_barang], (err, assets) => {
+            if (err) {
+                console.error("❌ Error Database Inventaris Aset:", err);
+                return res.status(500).send("Database Error: " + err.message);
+            }
             
+            // Render view sesuai dengan nama variabel yang diminta file Pug kamu: 'item' dan 'dataAssets'
             res.render('staf_admin/cetak_label', { 
                 user: req.session.user, 
-                item: item, 
-                dataAssets: assets 
+                item: itemDraf,        // Untuk link kembali: item.id_draf
+                dataAssets: assets    // Array data asset untuk perulangan (each asset in dataAssets)
             });
+        });
+    });
+});
+
+
+// 8. VIEW MONITORING INVENTARIS (Melihat Kondisi Fisik di Lab)
+router.get('/monitoring-inventaris', isStafAdmin, (req, res) => {
+    const queryList = `
+        SELECT i.*, r.nama_ruangan 
+        FROM inventaris i
+        JOIN ruangan r ON i.id_ruangan = r.id_ruangan
+        ORDER BY i.id_inventaris DESC
+    `;
+    db.query(queryList, (err, assets) => {
+        if (err) return res.status(500).send("Database Error: " + err.message);
+        res.render('staf_admin/monitoring_inventaris', { 
+            user: req.session.user, 
+            dataAssets: assets 
+        });
+    });
+});
+
+// 9. VIEW MONITORING LOGISTIK BHP (Melihat Stok Suku Cadang)
+router.get('/monitoring-bhp', isStafAdmin, (req, res) => {
+    const queryBhp = `
+        SELECT b.*, r.nama_ruangan 
+        FROM bhp b
+        JOIN ruangan r ON b.id_ruangan = r.id_ruangan
+        ORDER BY b.id_bhp DESC
+    `;
+    db.query(queryBhp, (err, bhpRows) => {
+        if (err) return res.status(500).send("Database Error: " + err.message);
+        res.render('staf_admin/monitoring_bhp', { 
+            user: req.session.user, 
+            dataBhp: bhpRows 
         });
     });
 });

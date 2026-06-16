@@ -1,0 +1,42 @@
+extends ../layouts/main
+
+block content
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Monitoring Kondisi Inventaris Lab
+    a.btn.btn-secondary.btn-sm(href="/staf-admin") Kembali
+
+  .card.shadow.mb-4
+    .card-header.py-3.bg-dark
+      h6.m-0.font-weight-bold.text-white Semua Aset Ter-registrasi
+    .card-body
+      .table-responsive
+        table.table.table-bordered.table-hover
+          thead.thead-light
+            tr
+              th No
+              th Kode Label QR
+              th Nama Barang
+              th Lokasi Ruangan
+              th Tahun
+              th Kondisi Saat Ini
+          tbody
+            if dataAssets && dataAssets.length > 0
+              each asset, index in dataAssets
+                tr
+                  td #{index + 1}
+                  td.font-weight-bold.text-primary #{asset.kode_label_qr}
+                  td #{asset.nama_barang}
+                  td #{asset.nama_ruangan}
+                  td #{asset.tahun_pengadaan}
+                  td
+                    if asset.kondisi === 'baik'
+                      span.badge.badge-success BAIK
+                    else if asset.kondisi === 'rusak'
+                      span.badge.badge-danger RUSAK
+                    else if asset.kondisi === 'maintenance'
+                      span.badge.badge-warning MAINTENANCE
+                    else
+                      span.badge.badge-secondary DIHAPUS
+            else
+              tr
+                td.text-center(colspan="6") Belum ada data barang inventaris.
